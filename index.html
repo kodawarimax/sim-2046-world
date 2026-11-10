@@ -1133,6 +1133,62 @@
               </div>
             </div>
 
+            <!-- Practical Business Plan: Unit Economics, CapEx, Debt & Cost Breakdown -->
+            <div class="stack-sm divider-top" style="padding: 14px; background: var(--color-surface); border: 1px solid var(--color-border);">
+              <div class="flex-between">
+                <h3>💼 実務事業計画（単価×客数・LTV/CAC・投資・借入）</h3>
+                <button type="button" onclick="syncUnitEconomicsToMain()" class="btn btn-primary" style="min-height: 28px; padding: 4px 10px; font-size: 12px;">単価×客数を月商・固定費へ反映</button>
+              </div>
+              <p class="meta-text">客単価・獲得コスト・設備投資・銀行借入を入れると、右側の「損益分岐点・投資回収期間・5カ年PL/CF表」がリアルタイム計算されます。</p>
+
+              <div class="grid-12" style="gap: 10px; margin-top: 4px;">
+                <div class="col-6 stack-sm">
+                  <label for="cb-unit-price" class="meta-text">客単価 / ARPU (万円)</label>
+                  <input id="cb-unit-price" type="number" min="0.05" max="50000" step="0.5" value="14.0" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-6 stack-sm">
+                  <label for="cb-monthly-cust" class="meta-text">月間客数・契約数 (件/月)</label>
+                  <input id="cb-monthly-cust" type="number" min="1" max="1000000" step="1" value="25" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-6 stack-sm">
+                  <label for="cb-repeat-months" class="meta-text">平均継続・リピート回数 (回)</label>
+                  <input id="cb-repeat-months" type="number" min="1" max="240" step="1" value="4" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-6 stack-sm">
+                  <label for="cb-cac-man" class="meta-text">新規1件獲得費 CAC (万円)</label>
+                  <input id="cb-cac-man" type="number" min="0.05" max="5000" step="0.1" value="3.5" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-6 stack-sm">
+                  <label for="cb-capex-man" class="meta-text">初期設備・開発投資 (万円)</label>
+                  <input id="cb-capex-man" type="number" min="0" max="500000" step="50" value="450" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-6 stack-sm">
+                  <label for="cb-loan-man" class="meta-text">銀行借入・融資額 (万円)</label>
+                  <input id="cb-loan-man" type="number" min="0" max="500000" step="50" value="500" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-6 stack-sm">
+                  <label for="cb-loan-rate" class="meta-text">借入金利 (年利 %)</label>
+                  <input id="cb-loan-rate" type="number" min="0" max="20" step="0.1" value="1.8" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-6 stack-sm">
+                  <label for="cb-loan-years" class="meta-text">返済期間 (年・元利均等)</label>
+                  <input id="cb-loan-years" type="number" min="1" max="35" step="1" value="7" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-4 stack-sm">
+                  <label for="cb-labor-man" class="meta-text">人件費・外注 (万/月)</label>
+                  <input id="cb-labor-man" type="number" min="0" max="50000" step="5" value="75" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-4 stack-sm">
+                  <label for="cb-rent-man" class="meta-text">家賃・運営費 (万/月)</label>
+                  <input id="cb-rent-man" type="number" min="0" max="50000" step="5" value="35" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+                <div class="col-4 stack-sm">
+                  <label for="cb-ad-man" class="meta-text">広告・販促費 (万/月)</label>
+                  <input id="cb-ad-man" type="number" min="0" max="50000" step="5" value="30" class="swiss-input tabular" oninput="renderPracticalBizPlan()">
+                </div>
+              </div>
+            </div>
+
             <div class="stack-sm divider-top">
               <div class="flex-between">
                 <label for="cb-sacred" class="meta-text">01 人間にしかできない感動・歴史・リアル体験の強さ</label>
@@ -1214,6 +1270,42 @@
                 <span class="caption-label">50年間で貯まる資金合計</span>
                 <div id="cb-kpi-cash" class="metric-value tabular">¥5.12億</div>
                 <div id="cb-kpi-surv" class="meta-text">生き残り確率: 44.2%</div>
+              </div>
+            </div>
+
+            <!-- Practical Business Plan Dashboard: BEP, LTV/CAC, Payback, 5-Year PL/CF & CSV/Print -->
+            <div class="stack-md divider-top" style="padding: 20px; background: var(--color-surface); border: 1px solid var(--color-border);">
+              <div class="flex-between">
+                <div>
+                  <h3>📊 実務事業計画・財務PL/CF・投資回収シミュレーター（銀行融資・事業計画書対応）</h3>
+                  <p class="meta-text" style="margin-top: 4px;">左側の単価・客数・CAC・初期投資・借入条件から、損益分岐点・LTV/CAC・投資回収期間・5カ年損益＆資金繰り表を自動算出します。</p>
+                </div>
+                <div class="btn-row">
+                  <button type="button" onclick="exportBizPlanCsv()" class="btn btn-primary" style="min-height: 34px; padding: 6px 12px; font-size: 12px;">📥 CSV出力 (Excel/スプシ用)</button>
+                  <button type="button" onclick="copyBizPlanSummary()" class="btn" style="min-height: 34px; padding: 6px 12px; font-size: 12px;">📋 計画サマリーをコピー</button>
+                  <button type="button" onclick="window.print()" class="btn" style="min-height: 34px; padding: 6px 12px; font-size: 12px;">🖨️ 印刷 / PDF保存</button>
+                </div>
+              </div>
+              <span id="cb-export-toast" class="caption-label accent-text hidden"></span>
+
+              <div id="cb-bizplan-kpis" class="metric-strip"></div>
+
+              <canvas id="cbBizPlanCanvas" width="760" height="220" class="canvas-frame"></canvas>
+
+              <div class="table-wrap">
+                <table class="swiss-table tabular">
+                  <thead>
+                    <tr>
+                      <th>5カ年 財務P/L・C/F項目</th>
+                      <th>1年目 (2026)</th>
+                      <th>2年目 (2027)</th>
+                      <th>3年目 (2028)</th>
+                      <th>4年目 (2029)</th>
+                      <th>5年目 (2030)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cb-pl5y-tbody"></tbody>
+                </table>
               </div>
             </div>
 
@@ -3579,6 +3671,7 @@
       document.getElementById('cb-comp').value = p.comp;
       document.getElementById('cb-reg').value = p.reg;
       document.getElementById('cb-disp').value = p.disp;
+      if (typeof applyBizUnitPreset === 'function') applyBizUnitPreset(presetKey);
       runCustomBizSim();
       renderGithubFeatures();
     }
@@ -3948,7 +4041,458 @@
       }
 
       renderCustomBizCanvas();
+      if (typeof renderPracticalBizPlan === 'function') renderPracticalBizPlan();
     }
+
+    // =========================================================================
+    // PRACTICAL BUSINESS PLANNER: UNIT ECONOMICS, BREAK-EVEN, CAPEX/LOAN & 5Y PL/CF
+    // =========================================================================
+    const BIZ_UNIT_PRESETS = {
+      reborn: { unitPrice: 14.0, monthlyCust: 25, repeatMonths: 4, cacMan: 3.5, capexMan: 450, loanMan: 500, loanRate: 1.8, loanYears: 7, laborMan: 75, rentMan: 35, adMan: 30 },
+      revo: { unitPrice: 0.8, monthlyCust: 300, repeatMonths: 24, cacMan: 1.2, capexMan: 380, loanMan: 400, loanRate: 1.6, loanYears: 5, laborMan: 45, rentMan: 25, adMan: 25 },
+      agastia: { unitPrice: 15.0, monthlyCust: 12, repeatMonths: 18, cacMan: 6.0, capexMan: 200, loanMan: 200, loanRate: 1.5, loanYears: 5, laborMan: 35, rentMan: 15, adMan: 10 },
+      tojun: { unitPrice: 3.0, monthlyCust: 50, repeatMonths: 14, cacMan: 0.8, capexMan: 120, loanMan: 0, loanRate: 1.5, loanYears: 5, laborMan: 20, rentMan: 15, adMan: 10 },
+      kyosai: { unitPrice: 1.0, monthlyCust: 500, repeatMonths: 36, cacMan: 0.9, capexMan: 600, loanMan: 600, loanRate: 1.8, loanYears: 7, laborMan: 110, rentMan: 60, adMan: 40 },
+      re_sanctuary: { unitPrice: 16.0, monthlyCust: 30, repeatMonths: 6, cacMan: 4.2, capexMan: 1800, loanMan: 1500, loanRate: 1.9, loanYears: 10, laborMan: 80, rentMan: 55, adMan: 30 },
+      arch_hybrid: { unitPrice: 80.0, monthlyCust: 4, repeatMonths: 2, cacMan: 18.0, capexMan: 1200, loanMan: 1000, loanRate: 1.8, loanYears: 8, laborMan: 65, rentMan: 30, adMan: 20 },
+      gencon_infra: { unitPrice: 170.0, monthlyCust: 5, repeatMonths: 3, cacMan: 25.0, capexMan: 3500, loanMan: 2800, loanRate: 1.7, loanYears: 10, laborMan: 180, rentMan: 90, adMan: 40 },
+      saas: { unitPrice: 2.0, monthlyCust: 200, repeatMonths: 10, cacMan: 5.5, capexMan: 800, loanMan: 500, loanRate: 2.2, loanYears: 5, laborMan: 120, rentMan: 40, adMan: 60 },
+      retail: { unitPrice: 0.6, monthlyCust: 500, repeatMonths: 3, cacMan: 0.8, capexMan: 600, loanMan: 500, loanRate: 2.0, loanYears: 7, laborMan: 50, rentMan: 35, adMan: 25 }
+    };
+
+    function applyBizUnitPreset(presetKey) {
+      const u = BIZ_UNIT_PRESETS[presetKey];
+      if (!u) return;
+      const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+      setVal('cb-unit-price', u.unitPrice);
+      setVal('cb-monthly-cust', u.monthlyCust);
+      setVal('cb-repeat-months', u.repeatMonths);
+      setVal('cb-cac-man', u.cacMan);
+      setVal('cb-capex-man', u.capexMan);
+      setVal('cb-loan-man', u.loanMan);
+      setVal('cb-loan-rate', u.loanRate);
+      setVal('cb-loan-years', u.loanYears);
+      setVal('cb-labor-man', u.laborMan);
+      setVal('cb-rent-man', u.rentMan);
+      setVal('cb-ad-man', u.adMan);
+    }
+
+    function syncUnitEconomicsToMain() {
+      const unitPrice = Math.max(0.05, parseFloat(document.getElementById('cb-unit-price')?.value) || 3.5);
+      const monthlyCust = Math.max(1, parseFloat(document.getElementById('cb-monthly-cust')?.value) || 100);
+      const laborMan = Math.max(0, parseFloat(document.getElementById('cb-labor-man')?.value) || 0);
+      const rentMan = Math.max(0, parseFloat(document.getElementById('cb-rent-man')?.value) || 0);
+      const adMan = Math.max(0, parseFloat(document.getElementById('cb-ad-man')?.value) || 0);
+
+      const calcRev = Math.round(unitPrice * monthlyCust);
+      const calcFixed = Math.max(1, Math.round(laborMan + rentMan + adMan));
+
+      const revEl = document.getElementById('cb-rev');
+      const fixEl = document.getElementById('cb-fixed');
+      if (revEl) revEl.value = calcRev;
+      if (fixEl) fixEl.value = calcFixed;
+      runCustomBizSim();
+    }
+
+    function computePracticalBizPlan() {
+      const revMonthly = Math.max(1, parseFloat(document.getElementById('cb-rev')?.value) || 350);
+      const gmPct = Math.min(98, Math.max(5, parseFloat(document.getElementById('cb-gm')?.value) || 72));
+      const gmRatio = gmPct / 100.0;
+      const fixedMonthly = Math.max(1, parseFloat(document.getElementById('cb-fixed')?.value) || 140);
+      const initCash = Math.max(0, parseFloat(document.getElementById('cb-cash')?.value) || 600);
+
+      const unitPrice = Math.max(0.05, parseFloat(document.getElementById('cb-unit-price')?.value) || 3.5);
+      const monthlyCust = Math.max(1, parseFloat(document.getElementById('cb-monthly-cust')?.value) || Math.round(revMonthly / unitPrice));
+      const repeatMonths = Math.max(1, parseFloat(document.getElementById('cb-repeat-months')?.value) || 6);
+      const cacMan = Math.max(0.05, parseFloat(document.getElementById('cb-cac-man')?.value) || 1.5);
+
+      const capexMan = Math.max(0, parseFloat(document.getElementById('cb-capex-man')?.value) || 450);
+      const loanMan = Math.max(0, parseFloat(document.getElementById('cb-loan-man')?.value) || 500);
+      const loanRatePct = Math.max(0, parseFloat(document.getElementById('cb-loan-rate')?.value) || 1.8);
+      const loanYears = Math.max(1, parseInt(document.getElementById('cb-loan-years')?.value, 10) || 7);
+
+      const laborMan = Math.max(0, parseFloat(document.getElementById('cb-labor-man')?.value) || Math.round(fixedMonthly * 0.55));
+      const rentMan = Math.max(0, parseFloat(document.getElementById('cb-rent-man')?.value) || Math.round(fixedMonthly * 0.25));
+      const adMan = Math.max(0, parseFloat(document.getElementById('cb-ad-man')?.value) || Math.round(fixedMonthly * 0.20));
+
+      // 1. Break-even Point (損益分岐点)
+      const bepMonthlyRev = fixedMonthly / gmRatio;
+      const bepAnnualRev = bepMonthlyRev * 12;
+      const bepMonthlyCust = Math.ceil(bepMonthlyRev / unitPrice);
+      const safetyMarginPct = ((revMonthly - bepMonthlyRev) / Math.max(1, revMonthly)) * 100.0;
+
+      // 2. Unit Economics (LTV / CAC & Payback Months)
+      const grossProfitPerCustMonth = unitPrice * gmRatio;
+      const ltvMan = grossProfitPerCustMonth * repeatMonths;
+      const ltvCacRatio = ltvMan / Math.max(0.01, cacMan);
+      const cacPaybackMonths = cacMan / Math.max(0.01, grossProfitPerCustMonth);
+
+      // 3. Debt Service (元利均等返済スケジュール)
+      const rMonth = (loanRatePct / 100.0) / 12.0;
+      const nMonths = loanYears * 12;
+      let monthlyDebtPayment = 0;
+      if (loanMan > 0) {
+        if (rMonth > 0) {
+          monthlyDebtPayment = loanMan * (rMonth * Math.pow(1 + rMonth, nMonths)) / (Math.pow(1 + rMonth, nMonths) - 1);
+        } else {
+          monthlyDebtPayment = loanMan / nMonths;
+        }
+      }
+      const annualDebtService = monthlyDebtPayment * 12;
+
+      // 4. 5-Year Detailed P/L & Cash Flow Table (linked with 50-year simulation demand_mult & effGm)
+      const simRows = (app.cbSimResult && app.cbSimResult.rows) ? app.cbSimResult.rows : [];
+      const deprYears = 5;
+      const annualDepr = capexMan / deprYears;
+      let remLoan = loanMan;
+      let cashBalance = initCash + loanMan - capexMan;
+      let cumFreeCfForPayback = -capexMan;
+      let paybackYearFloat = null;
+
+      const pl5Rows = [];
+      for (let y = 0; y < 5; y++) {
+        const sr = simRows[y] || { demand_mult: 1.0, gross_margin_pct: gmPct, ai_cost_saving_pct: 0 };
+        const revY = revMonthly * 12 * (sr.demand_mult || 1.0);
+        const effGmY = (sr.gross_margin_pct || gmPct) / 100.0;
+        const cogsY = revY * (1.0 - effGmY);
+        const gpY = revY - cogsY;
+
+        const aiSave = (sr.ai_cost_saving_pct || 0) / 100.0;
+        const sgaCashY = fixedMonthly * 12 * (1.0 - aiSave * 0.35) * Math.pow(Math.max(1, sr.demand_mult || 1), 0.35);
+        const deprY = y < deprYears ? annualDepr : 0;
+        const opProfitY = gpY - sgaCashY - deprY;
+
+        // Interest & Principal split for the year
+        let interestY = 0;
+        let principalY = 0;
+        if (remLoan > 0 && y < loanYears) {
+          for (let m = 0; m < 12; m++) {
+            if (remLoan <= 0) break;
+            const intM = remLoan * rMonth;
+            const prinM = Math.min(remLoan, Math.max(0, monthlyDebtPayment - intM));
+            interestY += intM;
+            principalY += prinM;
+            remLoan = Math.max(0, remLoan - prinM);
+          }
+        }
+
+        const preTaxIncomeY = opProfitY - interestY;
+        const taxY = preTaxIncomeY > 0 ? preTaxIncomeY * 0.30 : 0;
+        const netIncomeY = preTaxIncomeY - taxY;
+        const opCfY = netIncomeY + deprY;
+        const freeCfY = opCfY - principalY;
+        cashBalance += freeCfY;
+
+        const prevCum = cumFreeCfForPayback;
+        cumFreeCfForPayback += opCfY;
+        if (paybackYearFloat === null && cumFreeCfForPayback >= 0) {
+          const needed = -prevCum;
+          const frac = opCfY > 0 ? Math.max(0, Math.min(1, needed / opCfY)) : 0;
+          paybackYearFloat = y + frac;
+        }
+
+        const dscrY = (interestY + principalY) > 0
+          ? (opProfitY + deprY) / (interestY + principalY)
+          : 99.9;
+
+        pl5Rows.push({
+          yearNum: y + 1,
+          year: 2026 + y,
+          rev: revY,
+          cogs: cogsY,
+          gp: gpY,
+          gmPct: effGmY * 100,
+          sgaCash: sgaCashY,
+          depr: deprY,
+          opProfit: opProfitY,
+          interest: interestY,
+          preTax: preTaxIncomeY,
+          tax: taxY,
+          netIncome: netIncomeY,
+          opCf: opCfY,
+          principal: principalY,
+          freeCf: freeCfY,
+          cashBalance,
+          dscr: dscrY,
+          cumPayback: cumFreeCfForPayback
+        });
+      }
+
+      const y1 = pl5Rows[0];
+      const roiY1Pct = capexMan > 0 ? (y1.opCf / capexMan) * 100.0 : (y1.opProfit / Math.max(1, initCash)) * 100.0;
+      const monthlyBurn = y1.freeCf < 0 ? Math.abs(y1.freeCf / 12.0) : 0;
+      const runwayMonths = monthlyBurn > 0 ? Math.max(0, (initCash + loanMan - capexMan) / monthlyBurn) : 999;
+
+      return {
+        revMonthly, gmPct, fixedMonthly, initCash,
+        unitPrice, monthlyCust, repeatMonths, cacMan,
+        capexMan, loanMan, loanRatePct, loanYears,
+        laborMan, rentMan, adMan,
+        bepMonthlyRev, bepAnnualRev, bepMonthlyCust, safetyMarginPct,
+        ltvMan, ltvCacRatio, cacPaybackMonths,
+        monthlyDebtPayment, annualDebtService,
+        paybackYearFloat, roiY1Pct, runwayMonths,
+        pl5Rows
+      };
+    }
+
+    function renderPracticalBizPlan() {
+      const kpiBox = document.getElementById('cb-bizplan-kpis');
+      if (!kpiBox) return;
+      const bp = computePracticalBizPlan();
+      app.lastBizPlan = bp;
+
+      const ltvStatus = bp.ltvCacRatio >= 3.0 ? '優良 (≥3.0x)' : (bp.ltvCacRatio >= 1.5 ? '標準 (1.5〜3x)' : '要改善 (<1.5x)');
+      const paybackTxt = bp.capexMan <= 0
+        ? '初期設備投資 0円 (即回収)'
+        : (bp.paybackYearFloat !== null ? `${bp.paybackYearFloat.toFixed(1)}年 (${Math.round(bp.paybackYearFloat * 12)}ヶ月)` : '5年超 (要固定費or単価見直し)');
+      const y1 = bp.pl5Rows[0];
+      const dscrTxt = bp.loanMan <= 0 ? '無借金経営' : `DSCR ${y1.dscr.toFixed(2)}倍 (${y1.dscr >= 1.2 ? '融資安全圏' : '返済注意'})`;
+      const runwayTxt = bp.runwayMonths >= 900 ? '黒字自走 (資金増加)' : `残り ${Math.round(bp.runwayMonths)}ヶ月`;
+
+      kpiBox.innerHTML = `
+        <div class="metric-cell">
+          <span class="caption-label">① 損益分岐点売上高 (BEP)</span>
+          <div class="metric-value tabular ${bp.safetyMarginPct >= 0 ? '' : 'accent-text'}">月${formatManYen(bp.bepMonthlyRev)}</div>
+          <div class="meta-text tabular">分岐点客数: 月${bp.bepMonthlyCust.toLocaleString()}件 / 安全余裕率: <strong>${bp.safetyMarginPct >= 0 ? '+' : ''}${bp.safetyMarginPct.toFixed(1)}%</strong></div>
+        </div>
+        <div class="metric-cell">
+          <span class="caption-label">② ユニット経済性 (LTV / CAC)</span>
+          <div class="metric-value tabular ${bp.ltvCacRatio >= 3.0 ? 'accent-text' : ''}">${bp.ltvCacRatio.toFixed(1)}x</div>
+          <div class="meta-text tabular">LTV ¥${bp.ltvMan.toFixed(1)}万 ÷ CAC ¥${bp.cacMan.toFixed(1)}万 (${ltvStatus}・${bp.cacPaybackMonths.toFixed(1)}ヶ月回収)</div>
+        </div>
+        <div class="metric-cell">
+          <span class="caption-label">③ 初期投資回収期間 & ROI</span>
+          <div class="metric-value tabular accent-text">${paybackTxt}</div>
+          <div class="meta-text tabular">初期投資 ${formatManYen(bp.capexMan)} / 初年度投資ROI: <strong>${bp.roiY1Pct.toFixed(1)}%</strong></div>
+        </div>
+        <div class="metric-cell">
+          <span class="caption-label">④ 借入返済 & 資金ランウェイ</span>
+          <div class="metric-value tabular">月¥${bp.monthlyDebtPayment.toFixed(1)}万</div>
+          <div class="meta-text tabular">${dscrTxt} / ランウェイ: <strong>${runwayTxt}</strong></div>
+        </div>
+      `;
+
+      // Render 5-Year Detailed P/L & Cash Flow Table
+      const tbody = document.getElementById('cb-pl5y-tbody');
+      if (tbody) {
+        const fmt = v => formatManYen(Math.round(v));
+        const rowsDef = [
+          { label: '① 売上高 (Annual Revenue)', fn: r => `<strong>${fmt(r.rev)}</strong>` },
+          { label: '② 売上原価・変動費 (COGS)', fn: r => fmt(r.cogs) },
+          { label: '③ 売上総利益 (粗利 / 粗利率)', fn: r => `<strong>${fmt(r.gp)}</strong> (${r.gmPct.toFixed(1)}%)` },
+          { label: '④ 販管費・固定費 (人件費・家賃・広告等)', fn: r => fmt(r.sgaCash) },
+          { label: '⑤ 減価償却費 (5年定額)', fn: r => fmt(r.depr) },
+          { label: '⑥ 営業利益 (Operating Profit)', fn: r => `<strong class="${r.opProfit >= 0 ? 'accent-text' : ''}">${fmt(r.opProfit)}</strong>` },
+          { label: '⑦ 支払利息・法人税等 (実効30%)', fn: r => `利息¥${r.interest.toFixed(1)}万 / 税${fmt(r.tax)}` },
+          { label: '⑧ 税引後当期純利益 (Net Income)', fn: r => `<strong>${fmt(r.netIncome)}</strong>` },
+          { label: '⑨ 営業CF (純利益＋減価償却)', fn: r => fmt(r.opCf) },
+          { label: '⑩ 借入金元本返済額 (Debt Principal)', fn: r => fmt(r.principal) },
+          { label: '⑪ フリーCF (返済後の純増減)', fn: r => `<strong class="${r.freeCf >= 0 ? 'accent-text' : ''}">${r.freeCf >= 0 ? '+' : ''}${fmt(r.freeCf)}</strong>` },
+          { label: '⑫ 期末現預金残高 (Cash Balance)', fn: r => `<strong>${fmt(r.cashBalance)}</strong> (DSCR:${r.dscr >= 50 ? '無借金' : r.dscr.toFixed(2) + 'x'})` }
+        ];
+        tbody.innerHTML = rowsDef.map(rd => `
+          <tr>
+            <td><strong>${rd.label}</strong></td>
+            ${bp.pl5Rows.map(r => `<td class="tabular">${rd.fn(r)}</td>`).join('')}
+          </tr>
+        `).join('');
+      }
+
+      renderBizPlanCanvas(bp);
+    }
+
+    function renderBizPlanCanvas(bp) {
+      const c = document.getElementById('cbBizPlanCanvas');
+      if (!c || !bp) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      ctx.clearRect(0, 0, w, h);
+
+      ctx.fillStyle = '#0c1624';
+      ctx.fillRect(0, 0, w, h);
+
+      // Left Half: Break-Even Chart (損益分岐点チャート)
+      const lx = 48, ly = 44, lw = 300, lh = h - 76;
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.strokeRect(lx, ly, lw, lh);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('📈 損益分岐点 (BEP) チャート (月次)', lx, 26);
+
+      const maxScaleRev = Math.max(bp.revMonthly * 1.4, bp.bepMonthlyRev * 1.4, 100);
+      const xOfRev = rv => lx + (rv / maxScaleRev) * lw;
+      const yOfVal = vl => ly + lh - (Math.max(0, Math.min(maxScaleRev, vl)) / maxScaleRev) * lh;
+
+      // Fixed cost horizontal line
+      const yFix = yOfVal(bp.fixedMonthly);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(lx, yFix); ctx.lineTo(lx + lw, yFix); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '12px monospace';
+      ctx.fillText(`固定費 ¥${bp.fixedMonthly}万`, lx + 6, Math.max(ly + 14, yFix - 6));
+
+      // Total cost line: Fixed + Variable(1 - gm) * Rev
+      const gmRatio = bp.gmPct / 100.0;
+      ctx.strokeStyle = '#ff6b6b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(lx, yFix);
+      ctx.lineTo(lx + lw, yOfVal(bp.fixedMonthly + maxScaleRev * (1 - gmRatio)));
+      ctx.stroke();
+
+      // Revenue line (y = x)
+      ctx.strokeStyle = '#4ef2d2';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.moveTo(lx, ly + lh);
+      ctx.lineTo(lx + lw, yOfVal(maxScaleRev));
+      ctx.stroke();
+
+      // BEP point
+      if (bp.bepMonthlyRev <= maxScaleRev) {
+        const bx = xOfRev(bp.bepMonthlyRev);
+        const by = yOfVal(bp.bepMonthlyRev);
+        ctx.fillStyle = '#ffd166';
+        ctx.beginPath(); ctx.arc(bx, by, 5.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillText(`BEP ¥${Math.round(bp.bepMonthlyRev)}万`, Math.min(lx + lw - 105, bx + 6), Math.min(ly + lh - 6, by + 15));
+      }
+
+      // Current Revenue point
+      const cx = xOfRev(bp.revMonthly);
+      const cy = yOfVal(bp.revMonthly);
+      ctx.fillStyle = '#4ef2d2';
+      ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillText(`現在月商 ¥${bp.revMonthly}万`, Math.max(lx + 6, Math.min(lx + lw - 125, cx - 40)), Math.max(ly + 16, cy - 10));
+
+      // Right Half: 5-Year Investment Payback & Cash Balance Bars
+      const rx = 405, ry = 44, rw = 330, rh = h - 76;
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.strokeRect(rx, ry, rw, rh);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('💰 5カ年 投資回収 ＆ 期末現預金残高推移', rx, 26);
+
+      const vals = bp.pl5Rows.map(r => r.cashBalance).concat([bp.pl5Rows[0].cumPayback, -bp.capexMan, 100]);
+      const maxV = Math.max(...vals, 200);
+      const minV = Math.min(0, ...vals);
+      const spanV = Math.max(100, (maxV - minV) * 1.2);
+      const yZero = ry + rh - ((0 - minV) / spanV) * rh;
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.beginPath(); ctx.moveTo(rx, yZero); ctx.lineTo(rx + rw, yZero); ctx.stroke();
+
+      bp.pl5Rows.forEach((r, idx) => {
+        const bx = rx + 20 + idx * 60;
+        const yCash = ry + rh - ((r.cashBalance - minV) / spanV) * rh;
+        const barH = Math.abs(yZero - yCash);
+        ctx.fillStyle = r.cashBalance >= 0 ? '#56cfe1' : '#ff6b6b';
+        ctx.fillRect(bx, Math.min(yZero, yCash), 32, Math.max(3, barH));
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '12px monospace';
+        ctx.fillText(`${r.yearNum}年目`, bx - 2, ry + rh + 18);
+        ctx.fillText(formatManYen(r.cashBalance), bx - 8, Math.max(ry + 14, Math.min(yZero, yCash) - 6));
+      });
+    }
+
+    function exportBizPlanCsv() {
+      const bp = app.lastBizPlan || computePracticalBizPlan();
+      const sim = app.cbSimResult;
+      if (!bp || !sim) return;
+
+      const lines = [];
+      lines.push(['事業計画・財務PL/CF・50年予測レポート', sim.name]);
+      lines.push(['出力日時', new Date().toISOString().slice(0, 10)]);
+      lines.push([]);
+      lines.push(['【1】ユニットエコノミクス・損益分岐点・投資回収サマリー']);
+      lines.push(['項目', '数値', '単位・備考']);
+      lines.push(['現在月商', bp.revMonthly, '万円/月']);
+      lines.push(['粗利率', bp.gmPct, '%']);
+      lines.push(['月間固定費', bp.fixedMonthly, '万円/月']);
+      lines.push(['損益分岐点月商 (BEP)', bp.bepMonthlyRev.toFixed(1), '万円/月']);
+      lines.push(['損益分岐点客数', bp.bepMonthlyCust, '件/月']);
+      lines.push(['安全余裕率', bp.safetyMarginPct.toFixed(1), '%']);
+      lines.push(['客単価 (ARPU)', bp.unitPrice, '万円']);
+      lines.push(['顧客LTV', bp.ltvMan.toFixed(1), '万円']);
+      lines.push(['顧客獲得単価 (CAC)', bp.cacMan.toFixed(1), '万円']);
+      lines.push(['LTV/CAC倍率', bp.ltvCacRatio.toFixed(2), '倍']);
+      lines.push(['初期設備投資 (CapEx)', bp.capexMan, '万円']);
+      lines.push(['銀行借入額', bp.loanMan, `万円 (年利${bp.loanRatePct}%・${bp.loanYears}年返済)`]);
+      lines.push(['初期投資回収期間', bp.paybackYearFloat !== null ? bp.paybackYearFloat.toFixed(2) : '5年超', '年']);
+      lines.push([]);
+      lines.push(['【2】5カ年 損益計算書(P/L)・キャッシュフロー計算書(C/F) (単位: 万円)']);
+      lines.push(['年次', '西暦', '売上高', '売上原価', '売上総利益', '販管費', '減価償却費', '営業利益', '支払利息', '法人税等', '税引後純利益', '営業CF', '借入元本返済', 'フリーCF', '期末現預金残高', 'DSCR(倍)']);
+      bp.pl5Rows.forEach(r => {
+        lines.push([
+          `${r.yearNum}年目`, r.year,
+          r.rev.toFixed(1), r.cogs.toFixed(1), r.gp.toFixed(1),
+          r.sgaCash.toFixed(1), r.depr.toFixed(1), r.opProfit.toFixed(1),
+          r.interest.toFixed(1), r.tax.toFixed(1), r.netIncome.toFixed(1),
+          r.opCf.toFixed(1), r.principal.toFixed(1), r.freeCf.toFixed(1),
+          r.cashBalance.toFixed(1), r.dscr >= 50 ? '無借金' : r.dscr.toFixed(2)
+        ]);
+      });
+      lines.push([]);
+      lines.push(['【3】50カ年 長期AI時代サバイバル予測 (2026-2076)']);
+      lines.push(['西暦', '経過年', '年間売上(万円)', '税引後営業利益(万円)', 'P10下振れ利益(万円)', '累積資金(万円)', 'AI自動化率(%)', 'AI執事監査通過率(%)', '累積生存確率(%)', 'イベント']);
+      sim.rows.forEach(r => {
+        lines.push([
+          r.year, r.t, r.annual_rev_man, r.op_profit_man, r.op_profit_p10_man,
+          r.cum_cash_man, r.sub_pct, r.butler_audit_keep_pct, r.survival_prob_pct,
+          `"${String(r.event || '').replace(/"/g, '""')}"`
+        ]);
+      });
+
+      const csvContent = '\uFEFF' + lines.map(row => row.join(',')).join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `business_plan_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      const toast = document.getElementById('cb-export-toast');
+      if (toast) {
+        toast.textContent = '✅ CSVをダウンロードしました（Excel / スプレッドシート対応）';
+        toast.classList.remove('hidden');
+      }
+    }
+
+    function copyBizPlanSummary() {
+      const bp = app.lastBizPlan || computePracticalBizPlan();
+      const sim = app.cbSimResult;
+      if (!bp || !sim) return;
+      const y1 = bp.pl5Rows[0];
+      const y3 = bp.pl5Rows[2];
+      const y5 = bp.pl5Rows[4];
+      const paybackTxt = bp.capexMan <= 0 ? '初期投資0円（即回収）' : (bp.paybackYearFloat !== null ? `${bp.paybackYearFloat.toFixed(1)}年` : '5年超');
+      const text = [
+        `■ 事業計画エグゼクティブサマリー：${sim.name}`,
+        `・現在月商：¥${bp.revMonthly}万円（客単価 ¥${bp.unitPrice}万 × 月${bp.monthlyCust}件 / 粗利率 ${bp.gmPct}%）`,
+        `・損益分岐点売上高 (BEP)：月商 ¥${bp.bepMonthlyRev.toFixed(1)}万円（月${bp.bepMonthlyCust}件 / 安全余裕率 ${bp.safetyMarginPct.toFixed(1)}%）`,
+        `・ユニットエコノミクス：LTV ¥${bp.ltvMan.toFixed(1)}万 ÷ CAC ¥${bp.cacMan.toFixed(1)}万 ＝ LTV/CAC ${bp.ltvCacRatio.toFixed(2)}倍（CAC回収 ${bp.cacPaybackMonths.toFixed(1)}ヶ月）`,
+        `・初期投資・借入：設備投資 ¥${bp.capexMan}万 / 借入 ¥${bp.loanMan}万（年利${bp.loanRatePct}%・${bp.loanYears}年返済・月返済 ¥${bp.monthlyDebtPayment.toFixed(1)}万）`,
+        `・投資回収期間：${paybackTxt}（初年度ROI ${bp.roiY1Pct.toFixed(1)}% / 初年度DSCR ${y1.dscr >= 50 ? '無借金' : y1.dscr.toFixed(2) + '倍'}）`,
+        `・1年目P/L：売上 ${formatManYen(y1.rev)} / 営業利益 ${formatManYen(y1.opProfit)} / フリーCF ${formatManYen(y1.freeCf)} / 期末資金 ${formatManYen(y1.cashBalance)}`,
+        `・3年目P/L：売上 ${formatManYen(y3.rev)} / 営業利益 ${formatManYen(y3.opProfit)} / フリーCF ${formatManYen(y3.freeCf)} / 期末資金 ${formatManYen(y3.cashBalance)}`,
+        `・5年目P/L：売上 ${formatManYen(y5.rev)} / 営業利益 ${formatManYen(y5.opProfit)} / フリーCF ${formatManYen(y5.freeCf)} / 期末資金 ${formatManYen(y5.cashBalance)}`
+      ].join('\n');
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => {});
+      }
+      const toast = document.getElementById('cb-export-toast');
+      if (toast) {
+        toast.textContent = '📋 事業計画サマリーをクリップボードにコピーしました！';
+        toast.classList.remove('hidden');
+      }
+    }
+
 
     function renderCustomBizCanvas() {
       const c = document.getElementById('customBizCanvas');
