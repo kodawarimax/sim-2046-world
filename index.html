@@ -943,9 +943,13 @@
             <div class="stack-md" style="padding: 20px; background: var(--color-surface); border: 1px solid var(--color-border);">
               <div class="flex-between">
                 <span class="caption-label">TIME MACHINE SLIDER / 0歳から50年後（2076年）まで好きな年にワープ！</span>
-                <span id="lf-scrub-badge" class="control-val accent-text" style="font-size: 16px;">2030年（48歳 / 未来+4年目）</span>
+                <div class="btn-row" style="align-items: center;">
+                  <span id="lf-scrub-badge" class="control-val accent-text" style="font-size: 16px;">2030年（48歳 / 未来+4年目）</span>
+                  <button type="button" id="btn-lf-play" onclick="toggleLifelinePlay()" class="btn btn-primary" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">▶ 人生アニメ再生</button>
+                </div>
               </div>
               <input type="range" id="lf-scrub-yr" min="1982" max="2076" step="1" value="2030" oninput="onLifelineScrub(this.value)" />
+              <canvas id="lifeAnimCanvas" width="780" height="220" class="canvas-frame"></canvas>
 
               <!-- Dynamic Quick Jump Buttons for Key Turning Points (Past Valleys/Peaks & Future Cycles) -->
               <div id="lf-jump-buttons" class="btn-row" style="padding-top: 4px;">
@@ -1224,6 +1228,7 @@
                   <button onclick="toggleCustomYrPlay()" id="btn-cb-play" class="btn">50年間を自動再生</button>
                 </div>
               </div>
+              <canvas id="cbAnimCanvas" width="760" height="230" class="canvas-frame"></canvas>
               <div id="cb-year-detail-card" class="hairline-list"></div>
             </div>
 
@@ -1437,6 +1442,11 @@
 
             <!-- 4 Action Kits Selector -->
             <div class="stack-md">
+              <div class="flex-between">
+                <span class="caption-label">1と9集中×AIバトンタッチ リアルタイム実行アニメ</span>
+                <button type="button" onclick="triggerQuestAnimPulse()" class="btn btn-primary" style="min-height: 30px; padding: 4px 12px; font-size: 12px;">⚡ ロケット送信演出を再生</button>
+              </div>
+              <canvas id="questAnimCanvas" width="760" height="230" class="canvas-frame"></canvas>
               <div class="btn-row" role="tablist" aria-label="即実行案件キット選択">
                 <button onclick="selectActionKit('revo')" id="akit-revo" class="btn active">01 取引先への進捗共有</button>
                 <button onclick="selectActionKit('agastia')" id="akit-agastia" class="btn">02 提案済み案件の最終確認</button>
@@ -1680,8 +1690,10 @@
                 <button onclick="selectBizPattern(0)" id="bztab-0" class="btn active">01 本物の体験・手仕事</button>
                 <button onclick="selectBizPattern(1)" id="bztab-1" class="btn">02 地域の助け合いギルド</button>
                 <button onclick="selectBizPattern(2)" id="bztab-2" class="btn">03 土地・インフラ・安全責任</button>
+                <button onclick="toggleBiz3Play()" id="btn-biz3-play" class="btn btn-primary">▶ 20年進化アニメ再生</button>
               </div>
             </div>
+            <canvas id="biz3AnimCanvas" width="760" height="230" class="canvas-frame"></canvas>
             <canvas id="biz3ChartCanvas" width="760" height="260" class="canvas-frame"></canvas>
             <div id="biz3-cards-grid" class="grid-12 divider-top"></div>
           </div>
@@ -1716,10 +1728,12 @@
                 <span id="lbl-soc-yr" class="tabular accent-text">2046年 (20年後)</span>
               </div>
               <input id="sl-soc-yr" type="range" min="0" max="20" value="20" oninput="updateSoc4Sim(this.value)">
+              <button type="button" id="btn-soc4-play" onclick="toggleSoc4Play()" class="btn btn-primary" style="width: 100%; margin-top: 6px;">▶ 20年変化をアニメ再生</button>
             </div>
           </div>
 
           <div class="col-8 stack-lg">
+            <canvas id="soc4AnimCanvas" width="760" height="220" class="canvas-frame"></canvas>
             <div class="grid-12">
               <div class="col-6 stack-sm">
                 <h3>01 1日16時間の使い方と収入の内訳</h3>
@@ -1750,6 +1764,7 @@
             </p>
           </div>
           <div class="col-8 stack-lg">
+            <canvas id="wlAnimCanvas" width="760" height="230" class="canvas-frame"></canvas>
             <div id="wl-selector-cards" class="grid-12"></div>
             <div class="grid-12 divider-top">
               <div class="col-6 stack-sm">
@@ -1780,6 +1795,17 @@
             </p>
           </div>
           <div class="col-8 stack-lg">
+            <div class="stack-sm">
+              <div class="flex-between">
+                <h3>世界5大エリアのAI自動化＆人型ロボット時給変化アニメ（2026〜2046年）</h3>
+                <div class="btn-row" style="align-items: center;">
+                  <strong id="lbl-gl-yr" class="tabular accent-text">2026年 (現在)</strong>
+                  <input id="gl-yr-slider" type="range" min="0" max="20" value="0" oninput="onGlobalYrChange(this.value)" style="width: 140px;" aria-label="世界比較年スライダー">
+                  <button type="button" id="btn-gl-play" onclick="toggleGlobalPlay()" class="btn btn-primary">▶ 世界の20年変化をアニメ再生</button>
+                </div>
+              </div>
+              <canvas id="globalAnimCanvas" width="760" height="240" class="canvas-frame"></canvas>
+            </div>
             <div class="table-wrap">
               <table class="swiss-table tabular">
                 <thead>
@@ -1839,7 +1865,14 @@
             </div>
           </div>
           <div class="col-8 stack-md">
-            <h3>1,000人の住人がどのグループに集まるか（リアルタイム画面）</h3>
+            <div class="flex-between">
+              <h3>1,000人の住人がどのグループに集まるか（リアルタイム画面）</h3>
+              <div class="btn-row" style="align-items: center;">
+                <strong id="lbl-abm-yr" class="tabular accent-text">2026年 (現在)</strong>
+                <input id="abm-yr-slider" type="range" min="0" max="50" value="0" oninput="onAbmYrChange(this.value)" style="width: 140px;" aria-label="住民移動年スライダー">
+                <button type="button" id="btn-abm-play" onclick="toggleAbmPlay()" class="btn btn-primary">▶ 50年移動アニメ再生</button>
+              </div>
+            </div>
             <canvas id="abmCanvas" width="760" height="380" class="canvas-frame"></canvas>
           </div>
         </div>
@@ -1855,8 +1888,16 @@
           <div class="col-4">
             <div class="accent-rule"></div>
             <h2>11 素朴なギモン12問！「これからの仕事・お金・暮らしはどうなる？」</h2>
+            <p class="meta-text" style="margin-top: 12px;">質問をクリックすると、上の図解アニメーションが切り替わります。</p>
           </div>
-          <div id="qa-container" class="col-8 hairline-list"></div>
+          <div class="col-8 stack-md">
+            <div class="flex-between">
+              <strong id="lbl-qa-sel" class="accent-text" style="font-size: 14px;">Q01 労働がオプションになると社会インフラが止まりませんか？</strong>
+              <button type="button" id="btn-qa-play" onclick="toggleQaPlay()" class="btn btn-primary">▶ 12問を順番にアニメ再生</button>
+            </div>
+            <canvas id="qaAnimCanvas" width="760" height="220" class="canvas-frame"></canvas>
+            <div id="qa-container" class="hairline-list"></div>
+          </div>
         </div>
       </section>
     </div>
@@ -3077,8 +3118,8 @@
 
     const qaEl = document.getElementById('qa-container');
     if (qaEl) {
-      qaEl.innerHTML = QA_DATA.map(([q, a]) => `
-        <div class="hairline-item" style="flex-direction: column; gap: 8px;">
+      qaEl.innerHTML = QA_DATA.map(([q, a], idx) => `
+        <div onclick="selectQaItem(${idx})" class="hairline-item" style="flex-direction: column; gap: 8px; cursor: pointer;">
           <h3>${q}</h3>
           <p>${a}</p>
         </div>
@@ -4904,8 +4945,9 @@
         )));
 
         let baseCfMan = 0;
-        if (linkBiz === 'linked' && lastCustomBizResult && lastCustomBizResult.rows && lastCustomBizResult.rows[t]) {
-          const bRow = lastCustomBizResult.rows[t];
+        const cbRes = app.cbSimResult;
+        if (linkBiz === 'linked' && cbRes && cbRes.rows && cbRes.rows[t]) {
+          const bRow = cbRes.rows[t];
           const personalAlignMod = 0.65 + 0.50 * guardSynergy;
           baseCfMan = Math.round((bRow.op_profit_man || bRow.netCfMan || 0) * personalAlignMod);
         } else {
@@ -5931,13 +5973,36 @@
         rpgState.autoPlayTimer = null;
         if (btn) btn.textContent = '▶ 50年アニメ再生';
       } else {
-        if (rpgState.year >= 2076) rpgState.year = 2026;
+        if (rpgState.year >= 2076) {
+          rpgState.year = 2026;
+          if (window.codexRpgWorld && window.codexRpgWorld.scene === 'story') {
+            window.codexRpgWorld.restartGame();
+          }
+        }
+        if (window.codexRpgWorld && window.codexRpgWorld.scene === 'story') {
+          if (window.codexRpgWorld.phase === 'title') {
+            window.codexRpgWorld.setPlayMode(window.codexRpgWorld.playMode || 'student');
+          }
+          window.codexRpgWorld.toggleQuestDrawer(false);
+        }
         if (btn) btn.textContent = '⏸ ストップ';
         rpgState.autoPlayTimer = setInterval(() => {
           rpgState.year++;
           const mSl = document.getElementById('rpg-master-yr');
           if (mSl) mSl.value = rpgState.year;
           onRpgMasterYr(rpgState.year);
+          if (window.codexRpgWorld && window.codexRpgWorld.scene === 'story') {
+            const w = window.codexRpgWorld;
+            if (!w.history[w.chapterIndex] && w.phase === 'choice') {
+              const modeIdx = rpgState.choiceMode === 'standard' ? 1 : (rpgState.choiceMode === 'relapse' ? 2 : 0);
+              w.chooseOption(modeIdx);
+              w.toggleQuestDrawer(false);
+              const slots = [[-240,160],[-95,117],[60,111],[220,160],[-200,239],[-57,202],[95,200],[249,252],[80,294],[0,58]];
+              const sl = slots[w.chapterIndex] || [0, 200];
+              w.hero.tx = sl[0]; w.hero.ty = sl[1]; w.hero.jump = 0.6;
+              syncFromCodexRpg();
+            }
+          }
           if (rpgState.year >= 2076) {
             clearInterval(rpgState.autoPlayTimer);
             rpgState.autoPlayTimer = null;
@@ -7357,12 +7422,894 @@
       }
     }
 
+    // =========================================================================
+    // TAB-SPECIFIC 60FPS ANIMATION SUITE (ALL 12 TABS)
+    // =========================================================================
+
+    // --- Tab 01: Lifeline 0-to-2076 Life Journey Animation ---
+    app.lfPlayTimer = null;
+    function toggleLifelinePlay() {
+      const btn = document.getElementById('btn-lf-play');
+      if (app.lfPlayTimer) {
+        clearInterval(app.lfPlayTimer);
+        app.lfPlayTimer = null;
+        if (btn) btn.textContent = '▶ 人生アニメ再生';
+      } else {
+        const minYr = lastLifelineResult ? lastLifelineResult.birthYear : 1982;
+        if (lfScrubYear >= 2076) lfScrubYear = minYr;
+        if (btn) btn.textContent = '⏸ 一時停止';
+        app.lfPlayTimer = setInterval(() => {
+          lfScrubYear++;
+          const sl = document.getElementById('lf-scrub-yr');
+          if (sl) sl.value = lfScrubYear;
+          onLifelineScrub(lfScrubYear);
+          if (lfScrubYear >= 2076) {
+            clearInterval(app.lfPlayTimer);
+            app.lfPlayTimer = null;
+            if (btn) btn.textContent = '▶ 人生アニメ再生';
+          }
+        }, 160);
+      }
+    }
+
+    function renderLifeAnimCanvas() {
+      const c = document.getElementById('lifeAnimCanvas');
+      if (!c || !lastLifelineResult) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      const rows = lastLifelineResult.combinedRows || [];
+      const row = rows.find(r => r.year === lfScrubYear) || rows[rows.length - 1] || {
+        year: lfScrubYear, age: 44, isPast: false, motP50: 70, bond: 80, cfMan: 1200, nwMan: 2500, title: ''
+      };
+      const mot = typeof row.motP50 === 'number' ? row.motP50 : 60;
+      const bond = typeof row.bond === 'number' ? row.bond : 70;
+      const nwMan = typeof row.nwMan === 'number' ? row.nwMan : 1000;
+      const isPinch = mot < 0 || row.isTrapWarning;
+      const progress = Math.max(0, Math.min(1, (row.year - lastLifelineResult.birthYear) / Math.max(1, 2076 - lastLifelineResult.birthYear)));
+
+      // Sky gradient reflecting motivation & era
+      const sky = ctx.createLinearGradient(0, 0, 0, h * 0.72);
+      if (isPinch) {
+        sky.addColorStop(0, '#1e1b2e');
+        sky.addColorStop(1, '#3b2d4a');
+      } else if (mot >= 65) {
+        sky.addColorStop(0, '#0f2847');
+        sky.addColorStop(0.55, '#1e4d6b');
+        sky.addColorStop(1, '#f3b664');
+      } else {
+        sky.addColorStop(0, '#16263b');
+        sky.addColorStop(1, '#3a5a78');
+      }
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
+
+      // Sun / Storm clouds
+      const sunX = 110 + progress * (w - 220);
+      const sunY = isPinch ? 78 : Math.max(52, 115 - (mot / 100) * 50);
+      if (!isPinch) {
+        const glow = ctx.createRadialGradient(sunX, sunY, 6, sunX, sunY, 58);
+        glow.addColorStop(0, 'rgba(255, 240, 175, 0.95)');
+        glow.addColorStop(1, 'rgba(255, 200, 100, 0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(sunX, sunY, 58, 0, Math.PI * 2); ctx.fill();
+      } else {
+        // Rain / headwind lines in pinch years
+        ctx.strokeStyle = 'rgba(180, 210, 255, 0.35)';
+        ctx.lineWidth = 1.5;
+        for (let i = 0; i < 24; i++) {
+          const rx = ((i * 47 - app.tick * 4) % w + w) % w;
+          const ry = 46 + ((i * 29 + app.tick * 6) % (h - 90));
+          ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(rx - 10, ry + 16); ctx.stroke();
+        }
+      }
+
+      // Mt. Fuji & Sanctuary silhouette in background (grows clearer in future years)
+      ctx.fillStyle = row.year >= 2026 ? '#243b55' : '#2b394a';
+      ctx.beginPath();
+      ctx.moveTo(w * 0.52, h * 0.72);
+      ctx.lineTo(w * 0.68, h * 0.32);
+      ctx.lineTo(w * 0.73, h * 0.32);
+      ctx.lineTo(w * 0.89, h * 0.72);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#f4f7fb';
+      ctx.beginPath();
+      ctx.moveTo(w * 0.653, h * 0.40);
+      ctx.lineTo(w * 0.68, h * 0.32);
+      ctx.lineTo(w * 0.73, h * 0.32);
+      ctx.lineTo(w * 0.757, h * 0.40);
+      ctx.closePath();
+      ctx.fill();
+
+      // Ground & Life Road
+      const groundY = Math.round(h * 0.72);
+      ctx.fillStyle = '#18241e';
+      ctx.fillRect(0, groundY, w, h - groundY);
+      ctx.fillStyle = '#2d4034';
+      ctx.fillRect(0, groundY + 12, w, 26);
+
+      // Scrolling road dashes
+      ctx.fillStyle = '#d8c38a';
+      for (let i = 0; i < 14; i++) {
+        const dx = ((i * 68 - app.tick * (isPinch ? 1.0 : 2.4)) % (w + 68) + (w + 68)) % (w + 68) - 34;
+        ctx.fillRect(dx, groundY + 23, 32, 4);
+      }
+
+      // Past / Future Milestone Torii & Trees along road
+      if (row.year >= 2026) {
+        const toriiX = w * 0.76;
+        ctx.fillStyle = '#d93829';
+        ctx.fillRect(toriiX - 24, groundY - 48, 6, 52);
+        ctx.fillRect(toriiX + 18, groundY - 48, 6, 52);
+        ctx.fillRect(toriiX - 32, groundY - 52, 64, 7);
+        ctx.fillRect(toriiX - 26, groundY - 38, 52, 5);
+      }
+
+      // Protagonist & Allies walking
+      const heroX = Math.round(w * 0.28 + progress * (w * 0.36));
+      const bounce = Math.abs(Math.sin(app.tick * 0.14)) * 5;
+      const heroY = groundY + 14 - bounce;
+
+      // Allies count based on bond (1 to 5 companions)
+      const allyCount = Math.max(1, Math.min(5, Math.round(bond / 20)));
+      for (let a = 0; a < allyCount; a++) {
+        const ax = heroX - 34 * (a + 1);
+        const ab = Math.abs(Math.sin(app.tick * 0.14 + (a + 1) * 0.9)) * 4;
+        const ay = groundY + 15 - ab;
+        ctx.fillStyle = a === 0 && row.year >= 2026 ? '#5ce1e6' : '#f4a261';
+        ctx.fillRect(ax - 6, ay - 22, 12, 16);
+        ctx.fillStyle = '#ffe3c4';
+        ctx.beginPath(); ctx.arc(ax, ay - 28, 6, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Hero Aura & Sprite
+      const auraR = 22 + Math.max(0, mot) * 0.16;
+      const aura = ctx.createRadialGradient(heroX, heroY - 16, 4, heroX, heroY - 16, auraR);
+      aura.addColorStop(0, isPinch ? 'rgba(255, 110, 90, 0.55)' : 'rgba(255, 220, 120, 0.65)');
+      aura.addColorStop(1, 'rgba(255, 220, 120, 0)');
+      ctx.fillStyle = aura;
+      ctx.beginPath(); ctx.arc(heroX, heroY - 16, auraR, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#e63946';
+      ctx.fillRect(heroX - 8, heroY - 26, 16, 19);
+      ctx.fillStyle = '#ffe5c8';
+      ctx.beginPath(); ctx.arc(heroX, heroY - 33, 7.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#1d3557';
+      ctx.fillRect(heroX - 6, heroY - 7, 5, 8);
+      ctx.fillRect(heroX + 1, heroY - 7, 5, 8);
+
+      // Top HUD Overlay
+      ctx.fillStyle = 'rgba(8, 15, 26, 0.84)';
+      ctx.fillRect(10, 10, w - 20, 36);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`🎬 人生タイムマシン：${row.year}年（${row.age}歳・${row.isPast ? 'これまでの歩み' : '未来シミュレーション'}）`, 20, 32);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '12px monospace';
+      ctx.fillText(`ワクワク度:${mot >= 0 ? '+' : ''}${Math.round(mot)}  仲間キズナ:${Math.round(bond)}  資産:${formatManYen(nwMan)}`, w - 330, 32);
+
+      // Bottom Event Caption
+      ctx.fillStyle = 'rgba(8, 15, 26, 0.86)';
+      ctx.fillRect(10, h - 38, w - 20, 28);
+      ctx.fillStyle = isPinch ? '#ffb4a2' : '#a8f0e2';
+      ctx.font = 'bold 12px sans-serif';
+      const cleanTitle = String(row.title || '').replace(/^【[^】]+】/, '').slice(0, 56);
+      ctx.fillText(`${isPinch ? '🔥 試練・分岐イベント：' : '✨ ライフステージ：'}${cleanTitle}`, 20, h - 20);
+    }
+
+    // --- Tab 02: Custom Business 50-Year Storefront & AI Butler Ecosystem Animation ---
+    function renderCustomBizAnimCanvas() {
+      const c = document.getElementById('cbAnimCanvas');
+      if (!c || !app.cbSimResult) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      const rows = app.cbSimResult.rows || [];
+      const rSel = rows[app.cbSelYearIdx] || rows[0];
+      if (!rSel) return;
+
+      ctx.fillStyle = '#0c1624';
+      ctx.fillRect(0, 0, w, h);
+
+      // Grid lines
+      ctx.strokeStyle = 'rgba(120, 175, 220, 0.12)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += 48) {
+        ctx.beginPath(); ctx.moveTo(x, 42); ctx.lineTo(x, h - 24); ctx.stroke();
+      }
+
+      const groundY = h - 42;
+      ctx.fillStyle = '#18283c';
+      ctx.fillRect(0, groundY, w, 42);
+
+      // 1) Left: Customer & AI Butler Audit Gate
+      const gateX = 185;
+      const keepPct = rSel.butler_audit_keep_pct;
+      ctx.fillStyle = '#1c3552';
+      ctx.fillRect(gateX - 18, groundY - 120, 36, 120);
+      ctx.strokeStyle = keepPct >= 70 ? '#4ef2d2' : '#ff7b7b';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(gateX - 18, groundY - 120, 36, 120);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('🤖 AI執事監査ゲート', gateX - 54, groundY - 128);
+      ctx.fillStyle = keepPct >= 70 ? '#4ef2d2' : '#ff9e8a';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText(`合格率 ${keepPct.toFixed(0)}%`, gateX - 38, groundY - 96);
+
+      // Customers & Coins flowing through gate
+      for (let i = 0; i < 6; i++) {
+        const phase = ((app.tick * 2.2 + i * 55) % 320);
+        const cx = 24 + phase;
+        const passed = (i * 19) % 100 < keepPct;
+        const cy = groundY - 22 - Math.abs(Math.sin(app.tick * 0.15 + i)) * 6;
+        if (cx > gateX && !passed) {
+          // Blocked by AI butler
+          ctx.fillStyle = 'rgba(255, 100, 100, 0.7)';
+          ctx.beginPath(); ctx.arc(gateX - 12, cy - 12, 6, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.fillStyle = cx > gateX ? '#ffd166' : '#90e0ef';
+          ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill();
+          if (cx > gateX) {
+            ctx.fillStyle = '#0c1624';
+            ctx.font = 'bold 12px monospace';
+            ctx.fillText('¥', cx - 4, cy + 4);
+          }
+        }
+      }
+
+      // 2) Center: Evolving Business HQ / Sanctuary Storefront
+      const hqX = 390;
+      const mult = Math.max(0.6, Math.min(5.0, rSel.demand_mult || 1));
+      const hqH = Math.min(96, Math.round(52 + mult * 10));
+      const hqW = Math.round(112 + mult * 10);
+      ctx.fillStyle = '#294866';
+      ctx.fillRect(hqX - hqW / 2, groundY - hqH, hqW, hqH);
+      // Warm roof & windows
+      ctx.fillStyle = '#d94e34';
+      ctx.beginPath();
+      ctx.moveTo(hqX - hqW / 2 - 10, groundY - hqH);
+      ctx.lineTo(hqX, groundY - hqH - 20);
+      ctx.lineTo(hqX + hqW / 2 + 10, groundY - hqH);
+      ctx.closePath();
+      ctx.fill();
+
+      const rowsWin = Math.max(2, Math.min(4, Math.floor(hqH / 22)));
+      ctx.fillStyle = '#ffe599';
+      for (let r = 0; r < rowsWin; r++) {
+        for (let col = 0; col < 4; col++) {
+          ctx.fillRect(hqX - hqW / 2 + 16 + col * 24, groundY - hqH + 10 + r * 18, 14, 10);
+        }
+      }
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText(`🏯 本業拠点 (需要 ${rSel.demand_mult.toFixed(2)}x)`, hqX - 68, groundY - hqH - 25);
+
+      // 3) Right: 2-8 AI & Robot Automation Pipeline
+      const roboX = 615;
+      const autoPct = rSel.sub_pct;
+      const roboCount = Math.max(1, Math.min(5, Math.ceil(autoPct / 20)));
+      ctx.fillStyle = '#9ee5db';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText(`⚙️ 2〜8作業AI・ロボ化 (${autoPct.toFixed(0)}%)`, roboX - 95, groundY - 125);
+      ctx.fillStyle = '#ffd166';
+      ctx.font = '12px monospace';
+      ctx.fillText(`ロボ時給 ¥${rSel.rob_hr_yen}/h`, roboX - 65, groundY - 106);
+
+      for (let r = 0; r < roboCount; r++) {
+        const rx = roboX - 75 + r * 34;
+        const ry = groundY - 14 - Math.sin(app.tick * 0.16 + r) * 5;
+        ctx.fillStyle = '#64dfdf';
+        ctx.fillRect(rx - 8, ry - 22, 16, 18);
+        ctx.fillStyle = '#0c1624';
+        ctx.fillRect(rx - 5, ry - 18, 10, 5);
+      }
+
+      // Top HUD Banner
+      ctx.fillStyle = 'rgba(7, 13, 22, 0.88)';
+      ctx.fillRect(8, 8, w - 16, 32);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 12px sans-serif';
+      const bName = (app.cbSimResult.name || 'ビジネス').slice(0, 14);
+      ctx.fillText(`🏪 ${rSel.year}年 (${rSel.t}年後)｜${bName}`, 16, 28);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(`年商:${formatManYen(rSel.annual_rev_man)}  利益:${formatManYen(rSel.op_profit_man)}  生存率:${rSel.survival_prob_pct}%`, w - 16, 28);
+      ctx.textAlign = 'left';
+
+      // Bottom Event Strip
+      ctx.fillStyle = '#d8e8f8';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(`📌 ${rSel.year}年の現場変化：${(rSel.event || '').slice(0, 52)}`, 16, h - 15);
+    }
+
+    // --- Tab 05: Today's Quest & 1-and-9 Dispatch Studio Animation ---
+    app.questPulseBoost = 0;
+    function triggerQuestAnimPulse() {
+      app.questPulseBoost = 90;
+    }
+
+    function renderQuestAnimCanvas() {
+      const c = document.getElementById('questAnimCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      if (app.questPulseBoost > 0) app.questPulseBoost--;
+
+      const compMap = (app.actionState && app.actionState.completed_tasks) || {};
+      const doneCount = ROADMAP_TASKS.filter(t => compMap[t.key]).length;
+      const speed = 2.4 + doneCount * 0.6 + (app.questPulseBoost > 0 ? 4.0 : 0);
+
+      ctx.fillStyle = '#0a1524';
+      ctx.fillRect(0, 0, w, h);
+
+      // 3 Stage Nodes: [1: ゼロから創発] -> [2〜8: AI＆仲間が自動処理] -> [9: 最後のひと押し送信]
+      const stages = [
+        { x: 130, y: 128, col: '#f5d58a', title: '① 創発・方向決定 (1)', sub: 'あなたがワクワク決める' },
+        { x: 380, y: 128, col: '#56cfe1', title: '②〜⑧ AI・仲間バトン', sub: '下書き・実務を自動処理' },
+        { x: 630, y: 128, col: '#ff6b6b', title: '⑨ 最後のひと押し (9)', sub: '1クリック送信で収益化！' }
+      ];
+
+      // Connecting energy pipeline
+      ctx.strokeStyle = '#234567';
+      ctx.lineWidth = 10;
+      ctx.beginPath(); ctx.moveTo(stages[0].x, stages[0].y); ctx.lineTo(stages[2].x, stages[2].y); ctx.stroke();
+
+      // Animated energy packets moving from 1 -> 2..8 -> 9
+      for (let i = 0; i < 8; i++) {
+        const p = ((app.tick * speed + i * 65) % 500) / 500;
+        const px = stages[0].x + p * (stages[2].x - stages[0].x);
+        const py = stages[0].y + Math.sin(p * Math.PI * 4 + app.tick * 0.1) * 8;
+        ctx.fillStyle = p < 0.5 ? '#56cfe1' : '#ffd166';
+        ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill();
+      }
+
+      stages.forEach((st, idx) => {
+        const pulse = Math.sin(app.tick * 0.1 + idx) * 4 + (app.questPulseBoost > 0 ? 6 : 0);
+        ctx.fillStyle = '#12263f';
+        ctx.beginPath(); ctx.arc(st.x, st.y, 44 + pulse * 0.4, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = st.col;
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(st.x, st.y, 44 + pulse * 0.4, 0, Math.PI * 2); ctx.stroke();
+
+        ctx.fillStyle = st.col;
+        ctx.font = 'bold 13px sans-serif';
+        ctx.fillText(st.title, st.x - 68, st.y + 68);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '12px sans-serif';
+        ctx.fillText(st.sub, st.x - 68, st.y + 86);
+      });
+
+      // Icons inside circles
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillText('💡 1', stages[0].x - 18, stages[0].y + 5);
+      ctx.fillText('🤖 2-8', stages[1].x - 26, stages[1].y + 5);
+      ctx.fillText('🚀 9!', stages[2].x - 20, stages[2].y + 5);
+
+      // Top HUD
+      ctx.fillStyle = 'rgba(7, 13, 22, 0.9)';
+      ctx.fillRect(8, 8, w - 16, 34);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`⚡ 1と9集中クエスト実行エンジン｜クリア済み: ${doneCount} / ${ROADMAP_TASKS.length} クエスト`, 18, 30);
+      ctx.fillStyle = '#4ef2d2';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText(`選択中キット: ${String(app.curKit || 'revo').toUpperCase()}`, w - 190, 30);
+    }
+
+    // --- Tab 06: 3 Surviving Businesses Animation ---
+    app.biz3YearOffset = 20;
+    app.biz3PlayTimer = null;
+    function toggleBiz3Play() {
+      const btn = document.getElementById('btn-biz3-play');
+      if (app.biz3PlayTimer) {
+        clearInterval(app.biz3PlayTimer);
+        app.biz3PlayTimer = null;
+        if (btn) btn.textContent = '▶ 20年進化アニメ再生';
+      } else {
+        if (app.biz3YearOffset >= 20) app.biz3YearOffset = 0;
+        if (btn) btn.textContent = '⏸ 一時停止';
+        app.biz3PlayTimer = setInterval(() => {
+          app.biz3YearOffset = Math.min(20, app.biz3YearOffset + 1);
+          if (app.biz3YearOffset >= 20) {
+            clearInterval(app.biz3PlayTimer);
+            app.biz3PlayTimer = null;
+            if (btn) btn.textContent = '▶ 20年進化アニメ再生';
+          }
+        }, 200);
+      }
+    }
+
+    function renderBiz3AnimCanvas() {
+      const c = document.getElementById('biz3AnimCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      const t = app.biz3YearOffset;
+      const yr = 2026 + t;
+      const sel = app.bizSelectedIdx || 0;
+
+      ctx.fillStyle = '#0c1826';
+      ctx.fillRect(0, 0, w, h);
+
+      const cards = [
+        { title: '01 聖域・人間証明モデル', sub: '千年神社×職人直販', col: '#f5d58a', mult: (1 + 0.22 * Math.pow(t, 1.3)).toFixed(1) + 'x' },
+        { title: '02 令和の講・ケア互助', sub: '直会・介護ロボ共有', col: '#56cfe1', mult: (1 + 0.19 * Math.pow(t, 1.25)).toFixed(1) + 'x' },
+        { title: '03 物理電源・最終責任保証', sub: '小水力×AI法務署名', col: '#90be6d', mult: (1 + 0.23 * Math.pow(t, 1.3)).toFixed(1) + 'x' }
+      ];
+
+      cards.forEach((cd, idx) => {
+        const x = 18 + idx * 244;
+        const y = 50;
+        const cw = 232, ch = h - 64;
+        const active = idx === sel;
+        ctx.fillStyle = active ? '#172d44' : '#102033';
+        ctx.fillRect(x, y, cw, ch);
+        ctx.strokeStyle = active ? cd.col : 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = active ? 2.5 : 1;
+        ctx.strokeRect(x, y, cw, ch);
+
+        ctx.fillStyle = cd.col;
+        ctx.font = 'bold 13px sans-serif';
+        ctx.fillText(cd.title, x + 12, y + 22);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 14px monospace';
+        ctx.fillText(cd.mult, x + cw - 56, y + 22);
+        ctx.fillStyle = '#b8c7d9';
+        ctx.font = '12px sans-serif';
+        ctx.fillText(cd.sub, x + 12, y + 42);
+
+        // Animated scene inside each pillar box
+        const cx = x + cw / 2, base = y + ch - 18;
+        if (idx === 0) {
+          // Shrine Torii + Orbiting global guests
+          ctx.fillStyle = '#e63946';
+          ctx.fillRect(cx - 26, base - 58, 6, 58);
+          ctx.fillRect(cx + 20, base - 58, 6, 58);
+          ctx.fillRect(cx - 34, base - 62, 68, 7);
+          for (let g = 0; g < 4; g++) {
+            const gx = cx + Math.cos(app.tick * 0.05 + g * 1.5) * 55;
+            const gy = base - 25 + Math.sin(app.tick * 0.08 + g) * 12;
+            ctx.fillStyle = '#ffd166';
+            ctx.beginPath(); ctx.arc(gx, gy, 5, 0, Math.PI * 2); ctx.fill();
+          }
+        } else if (idx === 1) {
+          // Mutual aid circle pulsing around hearth
+          const r = 34 + Math.sin(app.tick * 0.08) * 4;
+          ctx.strokeStyle = '#56cfe1';
+          ctx.beginPath(); ctx.arc(cx, base - 42, r, 0, Math.PI * 2); ctx.stroke();
+          for (let m = 0; m < 6; m++) {
+            const ang = app.tick * 0.03 + (m * Math.PI * 2) / 6;
+            ctx.fillStyle = m % 2 === 0 ? '#ffd166' : '#56cfe1';
+            ctx.beginPath(); ctx.arc(cx + Math.cos(ang) * r, base - 42 + Math.sin(ang) * r * 0.55, 6, 0, Math.PI * 2); ctx.fill();
+          }
+        } else {
+          // Microgrid turbine + Human Liability Stamp
+          const ang = app.tick * 0.09;
+          ctx.strokeStyle = '#90be6d';
+          ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(cx - 30, base - 42, 24, 0, Math.PI * 2); ctx.stroke();
+          for (let b = 0; b < 3; b++) {
+            const a = ang + (b * Math.PI * 2) / 3;
+            ctx.beginPath(); ctx.moveTo(cx - 30, base - 42); ctx.lineTo(cx - 30 + Math.cos(a) * 22, base - 42 + Math.sin(a) * 22); ctx.stroke();
+          }
+          ctx.fillStyle = '#f5d58a';
+          ctx.fillRect(cx + 14, base - 60, 42, 42);
+          ctx.fillStyle = '#0c1826';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('責任印', cx + 17, base - 34);
+        }
+      });
+
+      // Top HUD
+      ctx.fillStyle = 'rgba(7, 13, 22, 0.9)';
+      ctx.fillRect(8, 8, w - 16, 32);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`⛩️ ${yr}年 (T+${t}Y)｜AI執事時代に生き残る3大ビジネス生態系`, 18, 29);
+    }
+
+    // --- Tab 07: Future Society 4 Pillars (Work / Family / School / Governance) Animation ---
+    app.soc4PlayTimer = null;
+    function toggleSoc4Play() {
+      const btn = document.getElementById('btn-soc4-play');
+      const sl = document.getElementById('sl-soc-yr');
+      if (app.soc4PlayTimer) {
+        clearInterval(app.soc4PlayTimer);
+        app.soc4PlayTimer = null;
+        if (btn) btn.textContent = '▶ 20年変化をアニメ再生';
+      } else {
+        let cur = sl ? parseInt(sl.value, 10) : 0;
+        if (cur >= 20) cur = 0;
+        if (btn) btn.textContent = '⏸ 一時停止';
+        app.soc4PlayTimer = setInterval(() => {
+          cur++;
+          if (sl) sl.value = cur;
+          updateSoc4Sim(cur);
+          if (cur >= 20) {
+            clearInterval(app.soc4PlayTimer);
+            app.soc4PlayTimer = null;
+            if (btn) btn.textContent = '▶ 20年変化をアニメ再生';
+          }
+        }, 220);
+      }
+    }
+
+    function renderSoc4AnimCanvas() {
+      const c = document.getElementById('soc4AnimCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      const sl = document.getElementById('sl-soc-yr');
+      const t = sl ? parseInt(sl.value, 10) : 20;
+      const yr = 2026 + t;
+      const mode = app.socMode || 'balanced';
+
+      ctx.fillStyle = mode === 'vr' ? '#160f29' : (mode === 'feudal' ? '#1f1619' : '#0d1b2a');
+      ctx.fillRect(0, 0, w, h);
+
+      const scenes = [
+        { title: '01 働き方・16時間', sub: mode === 'vr' ? 'VR没入中心へ' : '労働縮小➔創作・直会へ', col: '#f5d58a' },
+        { title: '02 家族・ケア', sub: `家事ロボ普及・令和の講`, col: '#56cfe1' },
+        { title: '03 学校・教育', sub: 'AI家庭教師×現代の寺子屋', col: '#90be6d' },
+        { title: '04 お金・行政', sub: 'コンピュート税➔UCD配当', col: '#f4a261' }
+      ];
+
+      scenes.forEach((sc, i) => {
+        const x = 14 + i * 184;
+        const y = 48;
+        const bw = 174, bh = h - 60;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.fillRect(x, y, bw, bh);
+        ctx.strokeStyle = sc.col;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(x, y, bw, bh);
+
+        ctx.fillStyle = sc.col;
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(sc.title, x + 10, y + 22);
+        ctx.fillStyle = '#dce6f2';
+        ctx.font = '12px sans-serif';
+        ctx.fillText(sc.sub, x + 10, y + 40);
+
+        const cx = x + bw / 2, cy = y + bh - 44;
+        const bob = Math.sin(app.tick * 0.1 + i) * 5;
+        ctx.fillStyle = sc.col;
+        ctx.beginPath(); ctx.arc(cx - 22, cy + bob, 12, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.arc(cx + 22, cy - bob, 10, 0, Math.PI * 2); ctx.fill();
+        // Flowing connection between AI/Robot and Human
+        const px = cx - 22 + ((app.tick * 1.5 + i * 20) % 44);
+        ctx.fillStyle = '#ffd166';
+        ctx.beginPath(); ctx.arc(px, cy, 4, 0, Math.PI * 2); ctx.fill();
+      });
+
+      ctx.fillStyle = 'rgba(7, 13, 22, 0.9)';
+      ctx.fillRect(8, 8, w - 16, 32);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 13px sans-serif';
+      const modeLbl = mode === 'balanced' ? '聖地と助け合い社会' : (mode === 'feudal' ? '大企業独占・格差社会' : 'VRゲーム没入社会');
+      ctx.fillText(`🏡 ${yr}年 (${t}年後) の暮らし・学校・お金アニメ｜モード：${modeLbl}`, 18, 29);
+    }
+
+    // --- Tab 08: 4 Worldlines Comparison Animation ---
+    function renderWlAnimCanvas() {
+      const c = document.getElementById('wlAnimCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      const wl = app.wl || 'WL_Alpha';
+      const cur = WL_DATA[wl] || WL_DATA.WL_Alpha;
+
+      const bgCols = {
+        WL_Alpha: ['#0d2137', '#1d4e5f'],
+        WL_Beta: ['#1f1124', '#4a1c40'],
+        WL_Gamma: ['#0f0c29', '#302b63'],
+        WL_Delta: ['#1b261b', '#3a5a40']
+      }[wl] || ['#0d2137', '#1d4e5f'];
+
+      const g = ctx.createLinearGradient(0, 0, 0, h);
+      g.addColorStop(0, bgCols[0]);
+      g.addColorStop(1, bgCols[1]);
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+
+      const groundY = h - 44;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+      ctx.fillRect(0, groundY, w, 44);
+
+      // Animated worldline-specific centerpiece
+      const cx = w / 2;
+      // Sacred Shrine Sanctuary on right
+      ctx.fillStyle = '#e63946';
+      ctx.fillRect(w * 0.7 - 30, groundY - 76, 8, 76);
+      ctx.fillRect(w * 0.7 + 22, groundY - 76, 8, 76);
+      ctx.fillRect(w * 0.7 - 40, groundY - 82, 80, 9);
+
+      // Left structure varies by worldline
+      if (wl === 'WL_Alpha') {
+        // Harmonious Compute + Solar + Guild
+        ctx.fillStyle = '#4ef2d2';
+        ctx.fillRect(120, groundY - 95, 70, 95);
+        for (let i = 0; i < 8; i++) {
+          const x = 190 + ((app.tick * 2.5 + i * 42) % 320);
+          const y = groundY - 40 - Math.sin(i + app.tick * 0.08) * 18;
+          ctx.fillStyle = '#ffd166';
+          ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+        }
+      } else if (wl === 'WL_Beta') {
+        // Giant Techno-Feudal Citadel + VIP eVTOLs flying to Shrine
+        ctx.fillStyle = '#ff6b6b';
+        ctx.fillRect(100, groundY - 140, 90, 140);
+        const vx = 210 + ((app.tick * 3.2) % 310);
+        const vy = 86 + Math.sin(app.tick * 0.1) * 10;
+        ctx.fillStyle = '#ffe599';
+        ctx.fillRect(vx, vy, 36, 12);
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText('VIP eVTOL', vx - 8, vy - 6);
+      } else if (wl === 'WL_Gamma') {
+        // Full-Dive VR Matrix waves vs Physical Waterfall/Fire festival
+        ctx.strokeStyle = '#b5179e';
+        ctx.lineWidth = 2;
+        for (let wv = 0; wv < 4; wv++) {
+          ctx.beginPath();
+          for (let x = 40; x < 380; x += 16) {
+            const y = 90 + wv * 24 + Math.sin(x * 0.04 + app.tick * 0.12 + wv) * 12;
+            if (x === 40) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+      } else {
+        // Off-grid Mutual Aid Co-op & Shrine Microgrid
+        for (let m = 0; m < 7; m++) {
+          const mx = 120 + m * 56;
+          const my = groundY - 22 - Math.abs(Math.sin(app.tick * 0.12 + m)) * 8;
+          ctx.fillStyle = '#a3b18a';
+          ctx.fillRect(mx - 12, my - 24, 24, 24);
+        }
+      }
+
+      // Top HUD
+      ctx.fillStyle = 'rgba(7, 13, 22, 0.88)';
+      ctx.fillRect(8, 8, w - 16, 36);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`🌐 ${cur.title}（${cur.prob}）`, 18, 31);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(cur.sub, w - 18, 31);
+      ctx.textAlign = 'left';
+    }
+
+    // --- Tab 09: Global 5 Blocs & Robot Wage Curve Animation ---
+    app.globalYrOffset = 0;
+    app.globalPlayTimer = null;
+    function onGlobalYrChange(val) {
+      app.globalYrOffset = Math.max(0, Math.min(20, parseInt(val, 10) || 0));
+      const sl = document.getElementById('gl-yr-slider');
+      if (sl && parseInt(sl.value, 10) !== app.globalYrOffset) sl.value = app.globalYrOffset;
+      const lbl = document.getElementById('lbl-gl-yr');
+      if (lbl) lbl.textContent = `${2026 + app.globalYrOffset}年 (${app.globalYrOffset === 0 ? '現在' : app.globalYrOffset + '年後'})`;
+    }
+
+    function toggleGlobalPlay() {
+      const btn = document.getElementById('btn-gl-play');
+      if (app.globalPlayTimer) {
+        clearInterval(app.globalPlayTimer);
+        app.globalPlayTimer = null;
+        if (btn) btn.textContent = '▶ 世界の20年変化をアニメ再生';
+      } else {
+        if (app.globalYrOffset >= 20) app.globalYrOffset = 0;
+        if (btn) btn.textContent = '⏸ 一時停止';
+        app.globalPlayTimer = setInterval(() => {
+          onGlobalYrChange(app.globalYrOffset + 1);
+          if (app.globalYrOffset >= 20) {
+            clearInterval(app.globalPlayTimer);
+            app.globalPlayTimer = null;
+            if (btn) btn.textContent = '▶ 世界の20年変化をアニメ再生';
+          }
+        }, 220);
+      }
+    }
+
+    function renderGlobalAnimCanvas() {
+      const c = document.getElementById('globalAnimCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      const t = app.globalYrOffset || 0;
+      const yr = 2026 + t;
+      const p = t / 20;
+
+      const robWage = Math.round(680 * Math.pow(185 / 680, p));
+      const robBodyMan = Math.round(510 * Math.pow(80 / 510, p));
+
+      ctx.fillStyle = '#091526';
+      ctx.fillRect(0, 0, w, h);
+
+      const blocs = [
+        { name: '🇯🇵 日本', ai2046: 68.4, ubi2046: 21.4, col: '#ff6b6b' },
+        { name: '🇺🇸 米国', ai2046: 76.5, ubi2046: 26.8, col: '#4ea8de' },
+        { name: '🇨🇳 中国', ai2046: 79.2, ubi2046: 29.5, col: '#ffd166' },
+        { name: '🇪🇺 欧州', ai2046: 58.0, ubi2046: 24.2, col: '#56cfe1' },
+        { name: '🌏 新興国', ai2046: 54.0, ubi2046: 6.8, col: '#90be6d' }
+      ];
+
+      blocs.forEach((b, i) => {
+        const bx = 22 + i * 102;
+        const base = h - 38;
+        const curAi = (8 + (b.ai2046 - 8) * p);
+        const barH = Math.round(curAi * 1.45);
+        ctx.fillStyle = b.col;
+        ctx.fillRect(bx, base - barH, 68, barH);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(b.name, bx + 4, base + 18);
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText(`${curAi.toFixed(0)}%`, bx + 16, base - barH - 8);
+      });
+
+      // Right Panel: Humanoid Robot Cost Plunge Meter
+      const rx = 545, ry = 52, rw = 198, rh = h - 68;
+      ctx.fillStyle = '#132842';
+      ctx.fillRect(rx, ry, rw, rh);
+      ctx.strokeStyle = '#4ef2d2';
+      ctx.strokeRect(rx, ry, rw, rh);
+
+      ctx.fillStyle = '#4ef2d2';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText('🤖 人型ロボット稼働コスト', rx + 14, ry + 24);
+      ctx.fillStyle = '#ffd166';
+      ctx.font = 'bold 18px monospace';
+      ctx.fillText(`時給 ¥${robWage} /h`, rx + 14, ry + 54);
+      ctx.fillStyle = '#dce6f2';
+      ctx.font = '12px monospace';
+      ctx.fillText(`本体価格: 約${robBodyMan}万円`, rx + 14, ry + 78);
+
+      // Animated working robot figures
+      for (let r = 0; r < 4; r++) {
+        const ox = rx + 30 + r * 42;
+        const oy = ry + rh - 22 - Math.abs(Math.sin(app.tick * 0.15 + r)) * 6;
+        ctx.fillStyle = '#64dfdf';
+        ctx.fillRect(ox - 8, oy - 24, 16, 20);
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.arc(ox, oy - 30, 6, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // Top HUD
+      ctx.fillStyle = 'rgba(7, 13, 22, 0.9)';
+      ctx.fillRect(8, 8, w - 16, 32);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`🌍 ${yr}年 (T+${t}Y)｜世界5大エリアのAI自動化率 ＆ ロボット時給 ¥${robWage}/h`, 18, 29);
+    }
+
+    // --- Tab 10: ABM 1,000 Agents Controls ---
+    app.abmPlayTimer = null;
+    function onAbmYrChange(val) {
+      const idx = Math.max(0, Math.min(50, parseInt(val, 10) || 0));
+      onYearChange(idx);
+      const sl = document.getElementById('abm-yr-slider');
+      if (sl && parseInt(sl.value, 10) !== idx) sl.value = idx;
+      const lbl = document.getElementById('lbl-abm-yr');
+      if (lbl) lbl.textContent = `${2026 + idx}年 (${idx === 0 ? '現在' : idx + '年後'})`;
+    }
+
+    function toggleAbmPlay() {
+      const btn = document.getElementById('btn-abm-play');
+      if (app.abmPlayTimer) {
+        clearInterval(app.abmPlayTimer);
+        app.abmPlayTimer = null;
+        if (btn) btn.textContent = '▶ 50年移動アニメ再生';
+      } else {
+        if (app.yearIdx >= 50) onAbmYrChange(0);
+        if (btn) btn.textContent = '⏸ 一時停止';
+        app.abmPlayTimer = setInterval(() => {
+          onAbmYrChange(app.yearIdx + 1);
+          if (app.yearIdx >= 50) {
+            clearInterval(app.abmPlayTimer);
+            app.abmPlayTimer = null;
+            if (btn) btn.textContent = '▶ 50年移動アニメ再生';
+          }
+        }, 180);
+      }
+    }
+
+    // --- Tab 11: 12 Q&A Interactive Visual Diagram Animation ---
+    app.qaSelectedIdx = 0;
+    app.qaPlayTimer = null;
+    function selectQaItem(idx) {
+      app.qaSelectedIdx = Math.max(0, Math.min(QA_DATA.length - 1, idx));
+      const lbl = document.getElementById('lbl-qa-sel');
+      if (lbl && QA_DATA[app.qaSelectedIdx]) {
+        lbl.textContent = QA_DATA[app.qaSelectedIdx][0];
+      }
+    }
+
+    function toggleQaPlay() {
+      const btn = document.getElementById('btn-qa-play');
+      if (app.qaPlayTimer) {
+        clearInterval(app.qaPlayTimer);
+        app.qaPlayTimer = null;
+        if (btn) btn.textContent = '▶ 12問を順番にアニメ再生';
+      } else {
+        if (btn) btn.textContent = '⏸ 一時停止';
+        app.qaPlayTimer = setInterval(() => {
+          selectQaItem((app.qaSelectedIdx + 1) % QA_DATA.length);
+        }, 2200);
+      }
+    }
+
+    function renderQaAnimCanvas() {
+      const c = document.getElementById('qaAnimCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width, h = c.height;
+      const idx = app.qaSelectedIdx || 0;
+      const item = QA_DATA[idx] || QA_DATA[0];
+
+      ctx.fillStyle = '#0c1726';
+      ctx.fillRect(0, 0, w, h);
+
+      // Left node: Question / Challenge, Center: Mechanism, Right: 2046 Outcome
+      const nodes = [
+        { x: 140, y: 98, r: 34, col: '#ff6b6b', label: `Q${String(idx + 1).padStart(2, '0')} 疑問・課題` },
+        { x: 380, y: 98, r: 38, col: '#56cfe1', label: 'AI×聖域の解決エンジン' },
+        { x: 620, y: 98, r: 34, col: '#f5d58a', label: '2046年のリアルな答え' }
+      ];
+
+      ctx.strokeStyle = '#264653';
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[2].x, nodes[2].y); ctx.stroke();
+
+      for (let i = 0; i < 6; i++) {
+        const p = ((app.tick * 2.2 + i * 80) % 480) / 480;
+        const px = nodes[0].x + p * (nodes[2].x - nodes[0].x);
+        ctx.fillStyle = '#ffd166';
+        ctx.beginPath(); ctx.arc(px, nodes[0].y + Math.sin(p * Math.PI * 2 + app.tick * 0.1) * 10, 5, 0, Math.PI * 2); ctx.fill();
+      }
+
+      nodes.forEach((n, i) => {
+        const pulse = Math.sin(app.tick * 0.09 + i) * 3;
+        ctx.fillStyle = '#14283e';
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r + pulse, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = n.col;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r + pulse, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = n.col;
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(n.label, n.x - 56, n.y + 54);
+      });
+
+      ctx.fillStyle = 'rgba(7, 13, 22, 0.9)';
+      ctx.fillRect(8, 8, w - 16, 34);
+      ctx.fillStyle = '#f5d58a';
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillText(`💡 ギモン図解アニメ：${item[0].slice(0, 48)}`, 16, 30);
+
+      ctx.fillStyle = 'rgba(7, 13, 22, 0.9)';
+      ctx.fillRect(8, h - 38, w - 16, 30);
+      ctx.fillStyle = '#a8f0e2';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(`👉 結論：${item[1].slice(0, 56)}…`, 16, h - 18);
+    }
+
     function mainAnimLoop() {
       app.tick++;
       if (app.view === 'rpg' || !window.codexRpgWorld) renderRpgTownCanvas();
-      if (app.view === 'mc10k') renderRealisticViewport();
-      else if (app.view === 'abm') renderAbmCanvas();
+      if (app.view === 'lifeline') renderLifeAnimCanvas();
+      else if (app.view === 'custombiz') renderCustomBizAnimCanvas();
       else if (app.view === 'realestate') renderReTownCanvas();
+      else if (app.view === 'mc10k') renderRealisticViewport();
+      else if (app.view === 'pilot' || app.view === 'pilot') renderQuestAnimCanvas();
+      else if (app.view === 'biz3') renderBiz3AnimCanvas();
+      else if (app.view === 'society4') renderSoc4AnimCanvas();
+      else if (app.view === 'model' || app.view === 'model') renderWlAnimCanvas();
+      else if (app.view === 'global') renderGlobalAnimCanvas();
+      else if (app.view === 'abm') renderAbmCanvas();
+      else if (app.view === 'qa') renderQaAnimCanvas();
       requestAnimationFrame(mainAnimLoop);
     }
 
