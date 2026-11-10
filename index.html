@@ -1968,6 +1968,8 @@
                 <button type="button" onclick="onReYrChange(50)" class="btn" style="min-height: 36px; padding: 4px 10px; font-size: 12px;">2076 (50年後の未来都市)</button>
               </div>
 
+              <canvas id="reTownCanvas" width="760" height="300" class="canvas-frame" style="height: 300px;" role="img" aria-label="2026年から2076年まで、街並みが空き家・古民家再生・3Dプリンター住宅・AI基地ビル・未来都市へと建ち変わるアニメーション"></canvas>
+
               <div id="re-yr-detail-grid" class="grid-12 divider-top" style="row-gap: 16px;"></div>
             </div>
 
@@ -5419,6 +5421,169 @@
       if (typeof updateRpgHudStage === 'function') updateRpgHudStage();
     }
 
+    // ===== 03タブ：50年で建ち変わる街並みアニメ（Canvas 2D・依存なし） =====
+    // 年は app.reSelYearIdx（0〜50）。建物の種類が変わった区画は、クレーンと土ぼこり付きで地面からせり上がる。
+    const RE_TOWN_CAPTIONS = [
+      [0, '空き家が増え、古い家と古いオフィスビルが並ぶ'],
+      [3, '空き家を直して使う「古民家再生」がはじまる'],
+      [6, 'AIで部屋探しが直結に。管理の手間が減る'],
+      [10, '3Dプリンター住宅が建ちはじめる（工期が短く安い）'],
+      [18, '古いビルがAIの基地（データセンター）に生まれ変わる'],
+      [30, '街をコンパクトに。使わない土地は公園と畑へ'],
+      [36, '未来都市へ。空飛ぶクルマとロボが街を支える']
+    ];
+    const RE_TOWN_TYPES = {
+      akiya: '空き家', kominka: '再生古民家', oldhouse: '古い木造住宅', printed: '3Dプリンター住宅',
+      office: '古いオフィス', aibase: 'AI基地ビル', compact: '緑の集合住宅', park: '公園・畑', future: '未来タワー'
+    };
+    const reTown = { lots: [], shown: null, last: 0, dust: [], still: false };
+    function reTownTypeAt(i, t) {
+      const d = (i * 37) % 7;
+      if (i === 4 && t >= 30) return 'park';
+      if (i % 3 === 0) return t >= 32 + d ? 'compact' : t >= 3 + d ? 'kominka' : 'akiya';
+      if (i % 3 === 1) return t >= 40 + d ? 'future' : t >= 10 + d ? 'printed' : 'oldhouse';
+      return t >= 36 + d ? 'future' : t >= 18 + d ? 'aibase' : 'office';
+    }
+    function reLerpColor(a, b, f) {
+      const pa = [1, 3, 5].map(k => parseInt(a.slice(k, k + 2), 16)), pb = [1, 3, 5].map(k => parseInt(b.slice(k, k + 2), 16));
+      return 'rgb(' + pa.map((v, k) => Math.round(v + (pb[k] - v) * f)).join(',') + ')';
+    }
+    function reSkyAt(t) {
+      const keys = [[0, '#f3b98a', '#fbe3c4'], [15, '#7fb2e0', '#d8ecf7'], [30, '#3f7f93', '#bfe3df'], [50, '#1c1645', '#5a4c8e']];
+      for (let k = 0; k < keys.length - 1; k++) {
+        const [t0, a0, b0] = keys[k], [t1, a1, b1] = keys[k + 1];
+        if (t <= t1) { const f = (t - t0) / (t1 - t0); return [reLerpColor(a0, a1, f), reLerpColor(b0, b1, f)]; }
+      }
+      return [keys[3][1], keys[3][2]];
+    }
+    function reDrawBuilding(c, type, x, base, w, rise, time, i) {
+      // rise: 0→1（せり上がり）。座標は区画中心 x、地面 base。
+      c.save(); c.translate(x, base); c.scale(1, Math.max(0.02, rise)); c.translate(-x, -base);
+      const win = (wx, wy, ww, wh, on) => { c.fillStyle = on ? '#ffd877' : '#3a4256'; c.fillRect(wx, wy, ww, wh); };
+      if (type === 'akiya' || type === 'oldhouse' || type === 'kominka') {
+        const h = 46, body = type === 'akiya' ? '#8c8478' : type === 'kominka' ? '#c9a27a' : '#a8957c';
+        c.fillStyle = body; c.fillRect(x - w * 0.4, base - h, w * 0.8, h);
+        c.fillStyle = type === 'akiya' ? '#5d5750' : type === 'kominka' ? '#3e3a44' : '#5a4e48';
+        c.beginPath(); c.moveTo(x - w * 0.5, base - h); c.lineTo(x, base - h - 26); c.lineTo(x + w * 0.5, base - h); c.closePath(); c.fill();
+        if (type === 'akiya') {
+          c.strokeStyle = '#4b4640'; c.lineWidth = 2; c.beginPath(); c.moveTo(x - 12, base - 34); c.lineTo(x + 4, base - 18); c.moveTo(x + 4, base - 34); c.lineTo(x - 12, base - 18); c.stroke();
+          c.fillStyle = '#6f8f5a'; for (let k = 0; k < 5; k++) c.fillRect(x - w * 0.4 + k * 6, base - 6 - (k % 2) * 4, 3, 6 + (k % 2) * 4);
+        } else {
+          win(x - w * 0.28, base - 34, 12, 12, type === 'kominka'); win(x + w * 0.08, base - 34, 12, 12, type === 'kominka' && i % 2 === 0);
+          c.fillStyle = '#4c3445'; c.fillRect(x - 6, base - 20, 12, 20);
+          if (type === 'kominka') { c.fillStyle = '#d24a3a'; c.fillRect(x - w * 0.42, base - h - 2, w * 0.84, 3); }
+        }
+      } else if (type === 'printed') {
+        const r = w * 0.42;
+        c.fillStyle = '#e7dccb'; c.beginPath(); c.arc(x, base, r, Math.PI, Math.PI * 2); c.closePath(); c.fill();
+        c.strokeStyle = '#c9b89c'; c.lineWidth = 1;
+        for (let k = 1; k < 9; k++) { const yy = base - k * r / 9; const hw = Math.sqrt(Math.max(0, r * r - (base - yy) ** 2)); c.beginPath(); c.moveTo(x - hw, yy); c.lineTo(x + hw, yy); c.stroke(); }
+        win(x - 8, base - r * 0.6, 16, 10, true); c.fillStyle = '#5c6d72'; c.fillRect(x - 5, base - 16, 10, 16);
+      } else if (type === 'office' || type === 'aibase') {
+        const h = 120 + (i % 2) * 24;
+        c.fillStyle = type === 'office' ? '#7b8494' : '#26324f'; c.fillRect(x - w * 0.36, base - h, w * 0.72, h);
+        for (let row = 0; row < Math.floor(h / 16) - 1; row++) for (let col = 0; col < 3; col++) {
+          if (type === 'office') win(x - w * 0.28 + col * w * 0.2, base - h + 10 + row * 16, w * 0.12, 8, (row * 3 + col + i) % 4 === 0);
+          else { c.fillStyle = (row + col + Math.floor(time * 3)) % 5 === 0 ? '#9ffcff' : '#3fd5e8'; c.fillRect(x - w * 0.28 + col * w * 0.2, base - h + 10 + row * 16, w * 0.12, 3); }
+        }
+        if (type === 'aibase') { c.fillStyle = '#7ffcf0'; c.fillRect(x - 1, base - h - 18, 2, 18); c.globalAlpha = 0.5 + 0.5 * Math.sin(time * 4 + i); c.beginPath(); c.arc(x, base - h - 20, 4, 0, Math.PI * 2); c.fill(); c.globalAlpha = 1; }
+      } else if (type === 'compact') {
+        const h = 78;
+        c.fillStyle = '#d9e3d0'; c.fillRect(x - w * 0.42, base - h, w * 0.84, h);
+        c.fillStyle = '#4f8a5b'; for (let row = 0; row < 4; row++) c.fillRect(x - w * 0.44, base - h + 6 + row * 18, w * 0.88, 4);
+        for (let row = 0; row < 4; row++) for (let col = 0; col < 3; col++) win(x - w * 0.3 + col * w * 0.22, base - h + 12 + row * 18, w * 0.12, 8, (row + col) % 3 !== 0);
+        c.fillStyle = '#2f4f74'; c.fillRect(x - w * 0.4, base - h - 6, w * 0.8, 4);
+      } else if (type === 'park') {
+        c.fillStyle = '#6fa968'; c.fillRect(x - w * 0.48, base - 6, w * 0.96, 6);
+        for (let k = 0; k < 3; k++) { const tx = x - w * 0.3 + k * w * 0.3; c.fillStyle = '#6b4f3a'; c.fillRect(tx - 2, base - 26, 4, 22); c.fillStyle = k % 2 ? '#4f8f4f' : '#79b36a'; c.beginPath(); c.arc(tx, base - 32, 12, 0, Math.PI * 2); c.fill(); }
+      } else if (type === 'future') {
+        const h = Math.min(170 + (i % 3) * 20, base - 72);
+        const g = c.createLinearGradient(x, base - h, x, base); g.addColorStop(0, '#f7e3a1'); g.addColorStop(1, '#7c6ad6');
+        c.fillStyle = g; c.beginPath(); c.moveTo(x - w * 0.3, base); c.quadraticCurveTo(x - w * 0.42, base - h * 0.5, x - w * 0.08, base - h);
+        c.lineTo(x + w * 0.08, base - h); c.quadraticCurveTo(x + w * 0.42, base - h * 0.5, x + w * 0.3, base); c.closePath(); c.fill();
+        c.fillStyle = '#7ef0c8'; for (let k = 1; k < 5; k++) c.fillRect(x - w * 0.26, base - h * k / 5, w * 0.52, 3);
+        c.globalAlpha = 0.6 + 0.4 * Math.sin(time * 2 + i); c.fillStyle = '#fff6c8'; c.beginPath(); c.arc(x, base - h - 6, 5, 0, Math.PI * 2); c.fill(); c.globalAlpha = 1;
+      }
+      c.restore();
+    }
+    function renderReTownCanvas() {
+      const cv = document.getElementById('reTownCanvas');
+      if (!cv || !cv.getContext) return;
+      const r = cv.getBoundingClientRect ? cv.getBoundingClientRect() : { width: 760, height: 300 };
+      const W = Math.max(320, r.width || 760), H = Math.max(200, r.height || 300), dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+      const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const now = (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
+      const dt = reTown.last ? Math.min(0.1, now - reTown.last) : 0; reTown.last = now;
+      reTown.still = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      const target = Math.max(0, Math.min(50, app.reSelYearIdx || 0));
+      if (reTown.shown === null) reTown.shown = target;
+      reTown.shown += (target - reTown.shown) * Math.min(1, dt * 6);
+      if (Math.abs(target - reTown.shown) < 0.01) reTown.shown = target;
+      const t = reTown.shown, time = reTown.still ? 0 : now;
+      const base = H - 46, lots = 10, lw = W / lots;
+      // 区画の建て替え判定
+      for (let i = 0; i < lots; i++) {
+        const type = reTownTypeAt(i, Math.round(t));
+        const lot = reTown.lots[i] || (reTown.lots[i] = { type, age: 9 });
+        if (lot.type !== type) {
+          lot.prev = lot.type; lot.type = type; lot.age = 0;
+          for (let k = 0; k < 14; k++) reTown.dust.push({ x: (i + 0.5) * lw + (Math.random() - 0.5) * lw * 0.8, y: base - 4, vx: (Math.random() - 0.5) * 40, vy: -20 - Math.random() * 40, age: 0 });
+        }
+        lot.age += dt;
+      }
+      // 空
+      const [skyTop, skyBottom] = reSkyAt(t);
+      const sky = c.createLinearGradient(0, 0, 0, base); sky.addColorStop(0, skyTop); sky.addColorStop(1, skyBottom);
+      c.fillStyle = sky; c.fillRect(0, 0, W, H);
+      if (t >= 36) { c.fillStyle = '#ffffff'; for (let k = 0; k < 40; k++) { c.globalAlpha = 0.4 + 0.4 * Math.sin(time * 2 + k); c.fillRect((k * 137.3) % W, (k * 53.7) % (base * 0.6), 1.5, 1.5); } c.globalAlpha = 1; }
+      c.fillStyle = t < 36 ? '#fff1c4' : '#f1ecff'; c.beginPath(); c.arc(W * 0.85, 44, t < 36 ? 22 : 14, 0, Math.PI * 2); c.fill();
+      // 遠景の山（富士）
+      c.fillStyle = reLerpColor('#9aa9bf', '#3b3770', t / 50);
+      c.beginPath(); c.moveTo(W * 0.2, base); c.lineTo(W * 0.42, base - 120); c.lineTo(W * 0.5, base - 122); c.lineTo(W * 0.72, base); c.closePath(); c.fill();
+      c.fillStyle = '#f4f1ea'; c.beginPath(); c.moveTo(W * 0.385, base - 96); c.lineTo(W * 0.42, base - 120); c.lineTo(W * 0.5, base - 122); c.lineTo(W * 0.535, base - 96); c.closePath(); c.fill();
+      // 地面と道路
+      c.fillStyle = t >= 30 ? '#5f8f5a' : '#8a8f6a'; c.fillRect(0, base, W, H - base);
+      c.fillStyle = '#3d4250'; c.fillRect(0, base + 6, W, 22);
+      c.fillStyle = '#e7e2cf'; for (let k = 0; k < W / 40; k++) c.fillRect(((k * 40 - (time * 30) % 40) + W) % W, base + 16, 18, 2);
+      // 建物
+      for (let i = 0; i < lots; i++) {
+        const lot = reTown.lots[i], x = (i + 0.5) * lw, rise = Math.min(1, lot.age / 1.2), ease = 1 - Math.pow(1 - rise, 3);
+        if (lot.prev && rise < 1) { c.globalAlpha = 1 - ease; reDrawBuilding(c, lot.prev, x, base, lw, 1 - ease, time, i); c.globalAlpha = 1; }
+        reDrawBuilding(c, lot.type, x, base, lw, ease, time, i);
+        if (rise < 1) { // クレーン
+          c.strokeStyle = '#f2b632'; c.lineWidth = 3; c.beginPath(); c.moveTo(x + lw * 0.42, base); c.lineTo(x + lw * 0.42, base - 150); c.lineTo(x - lw * 0.2, base - 150); c.stroke();
+          c.lineWidth = 1; c.beginPath(); c.moveTo(x, base - 150); c.lineTo(x, base - 150 + 60 * ease); c.stroke();
+          c.fillStyle = '#fff3b0'; c.font = '700 12px system-ui, sans-serif'; c.textAlign = 'center'; c.fillText('建設中', x, base - 156);
+        }
+      }
+      // 土ぼこり
+      reTown.dust = reTown.dust.filter(p => (p.age += dt) < 1.2);
+      for (const p of reTown.dust) { p.x += p.vx * dt; p.y += p.vy * dt; c.globalAlpha = Math.max(0, 1 - p.age / 1.2) * 0.6; c.fillStyle = '#d8c8a8'; c.beginPath(); c.arc(p.x, p.y, 4 + p.age * 8, 0, Math.PI * 2); c.fill(); }
+      c.globalAlpha = 1;
+      // 道路の乗り物：クルマ → 自動運転ポッド、歩くロボ、ドローン、空飛ぶクルマ
+      const nVeh = 4;
+      for (let k = 0; k < nVeh; k++) {
+        const vx = ((time * (40 + k * 12) + k * W / nVeh) % (W + 60)) - 30, vy = base + 12 + (k % 2) * 8;
+        if (t < 15) { c.fillStyle = ['#c8102e', '#3a5a8c', '#e0e0e0', '#2f2f2f'][k]; c.fillRect(vx - 14, vy - 7, 28, 9); c.fillStyle = '#111'; c.beginPath(); c.arc(vx - 8, vy + 3, 3, 0, 7); c.arc(vx + 8, vy + 3, 3, 0, 7); c.fill(); }
+        else { c.fillStyle = '#9ef3ff'; c.beginPath(); c.ellipse(vx, vy - 2, 14, 6, 0, 0, Math.PI * 2); c.fill(); c.fillStyle = '#2b5e7a'; c.fillRect(vx - 6, vy - 5, 12, 3); }
+      }
+      if (t >= 6) for (let k = 0; k < 3; k++) { const rx = ((time * 18 + k * 230) % (W + 40)) - 20; c.fillStyle = '#cfd8e3'; c.fillRect(rx - 5, base - 14, 10, 12); c.fillStyle = '#2c3e66'; c.fillRect(rx - 3, base - 11, 6, 3); }
+      if (t >= 18) for (let k = 0; k < 3; k++) { const dx = ((time * 50 + k * 300) % (W + 40)) - 20, dy = 70 + k * 22 + Math.sin(time * 3 + k) * 6; c.fillStyle = '#e8f6ff'; c.fillRect(dx - 8, dy, 16, 3); c.fillRect(dx - 10, dy - 2, 4, 1); c.fillRect(dx + 6, dy - 2, 4, 1); }
+      if (t >= 30) { const ex = W - ((time * 35) % (W + 120)) + 60, ey = 52 + Math.sin(time) * 8; c.fillStyle = '#f2f7f4'; c.beginPath(); c.ellipse(ex, ey, 20, 7, 0, 0, Math.PI * 2); c.fill(); c.fillStyle = '#7ffcf0'; c.fillRect(ex - 26, ey - 6, 52, 2); }
+      // 文字（年・出来事・区画の内訳）
+      const yr = 2026 + Math.round(t);
+      let cap = RE_TOWN_CAPTIONS[0][1]; for (const [k, s] of RE_TOWN_CAPTIONS) if (Math.round(t) >= k) cap = s;
+      c.fillStyle = 'rgba(12,10,9,0.72)'; c.fillRect(12, 12, Math.min(W - 24, 520), 46);
+      c.fillStyle = '#ffffff'; c.textAlign = 'left'; c.textBaseline = 'middle';
+      c.font = '700 16px system-ui, sans-serif'; c.fillText(yr + '年（' + (Math.round(t) === 0 ? '今' : Math.round(t) + '年後') + '）', 22, 26);
+      c.font = '500 12px system-ui, sans-serif'; c.fillText(cap, 22, 46);
+      const counts = {}; reTown.lots.forEach(l => { counts[l.type] = (counts[l.type] || 0) + 1; });
+      const summary = Object.keys(counts).map(k => RE_TOWN_TYPES[k] + ' ' + counts[k]).join(' ／ ');
+      c.fillStyle = 'rgba(12,10,9,0.72)'; c.fillRect(0, H - 18, W, 18);
+      c.fillStyle = '#f0ece4'; c.font = '500 12px system-ui, sans-serif'; c.fillText('街の内訳（10区画）：' + summary, 10, H - 9);
+    }
+
     function toggleReYrPlay() {
       const btn = document.getElementById('btn-re-play');
       if (app.rePlayTimer) {
@@ -7197,6 +7362,7 @@
       if (app.view === 'rpg' || !window.codexRpgWorld) renderRpgTownCanvas();
       if (app.view === 'mc10k') renderRealisticViewport();
       else if (app.view === 'abm') renderAbmCanvas();
+      else if (app.view === 'realestate') renderReTownCanvas();
       requestAnimationFrame(mainAnimLoop);
     }
 
