@@ -548,6 +548,7 @@
   <header class="top-nav">
     <div class="swiss-container">
       <nav class="nav-strip" aria-label="インデックスナビゲーション">
+        <button id="nav-rpg" onclick="switchView('rpg')" class="nav-item">🎮 開拓RPGゲーム</button>
         <button id="nav-lifeline" onclick="switchView('lifeline')" class="nav-item active"><span class="tabular">01</span> 自分の人生RPG年表(〜2076)</button>
         <button id="nav-custombiz" onclick="switchView('custombiz')" class="nav-item"><span class="tabular">02</span> お店・ビジネス50年ゲーム</button>
         <button id="nav-realestate" onclick="switchView('realestate')" class="nav-item"><span class="tabular">03</span> 街・家・建築の50年変化</button>
@@ -568,6 +569,7 @@
     <!-- =================================================================== -->
     <!-- GAMIFIED RPG STATUS & INTERACTIVE TOWN-BUILDING ANIMATION STAGE     -->
     <!-- =================================================================== -->
+    <div id="view-rpg" class="hidden">
     <section id="rpg-hud-stage" class="rpg-stage">
       <div class="grid-12" style="align-items: start;">
         <!-- Left 4 Cols: Player Level, Title, Animated Gauges & Achievement Badges -->
@@ -699,6 +701,7 @@
         </div>
       </div>
     </section>
+    </div>
 
     <!-- =================================================================== -->
     <!-- VIEW 01 (DEFAULT): SELF-UNDERSTANDING PERSONAL TIMELINE SIMULATOR   -->
@@ -2112,7 +2115,7 @@
 
     function switchView(v) {
       app.view = v;
-      ['lifeline', 'custombiz', 'realestate', 'pilot', 'mc10k', 'biz3', 'society4', 'model', 'global', 'abm', 'qa'].forEach(k => {
+      ['rpg', 'lifeline', 'custombiz', 'realestate', 'pilot', 'mc10k', 'biz3', 'society4', 'model', 'global', 'abm', 'qa'].forEach(k => {
         const vEl = document.getElementById(`view-${k}`);
         const nEl = document.getElementById(`nav-${k}`);
         if (vEl) vEl.classList.toggle('hidden', k !== v);
@@ -7191,7 +7194,7 @@
 
     function mainAnimLoop() {
       app.tick++;
-      renderRpgTownCanvas();
+      if (app.view === 'rpg' || !window.codexRpgWorld) renderRpgTownCanvas();
       if (app.view === 'mc10k') renderRealisticViewport();
       else if (app.view === 'abm') renderAbmCanvas();
       requestAnimationFrame(mainAnimLoop);
