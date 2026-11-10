@@ -534,6 +534,72 @@
       animation: rpgPulsePop 360ms var(--ease-out);
     }
 
+    .game-meta-strip {
+      padding: 6px 0;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .meta-exp-track {
+      width: 84px;
+      height: 6px;
+      background: var(--color-border);
+      overflow: hidden;
+    }
+
+    .meta-exp-fill {
+      height: 100%;
+      background: var(--color-accent);
+      transition: width 240ms var(--ease-out);
+    }
+
+    .ceo-decision-card {
+      padding: 12px 14px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border-strong);
+      cursor: pointer;
+      text-align: left;
+      transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
+    }
+
+    .ceo-decision-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--color-accent);
+      background: var(--color-surface);
+    }
+
+    .ceo-decision-card:active {
+      transform: scale(0.985);
+    }
+
+    @keyframes juiceFloatUp {
+      0% { opacity: 0; transform: translateY(8px) scale(0.96); }
+      18% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-26px) scale(1); }
+    }
+
+    .juice-float-tag {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      padding: 4px 10px;
+      font-size: 12.5px;
+      font-weight: 700;
+      background: var(--color-text);
+      color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      animation: juiceFloatUp 980ms var(--ease-out) forwards;
+    }
+
+    .juice-float-tag.juice-accent {
+      background: var(--color-accent);
+      color: #ffffff;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, ::before, ::after {
         animation-duration: 0.01ms !important;
@@ -551,6 +617,7 @@
         <button id="nav-rpg" onclick="switchView('rpg')" class="nav-item">🎮 開拓RPGゲーム</button>
         <button id="nav-lifeline" onclick="switchView('lifeline')" class="nav-item active"><span class="tabular">01</span> 自分の人生RPG年表(〜2076)</button>
         <button id="nav-custombiz" onclick="switchView('custombiz')" class="nav-item"><span class="tabular">02</span> お店・ビジネス50年ゲーム</button>
+        <button id="nav-revorisk" onclick="switchView('revorisk')" class="nav-item">⚖️ 事業投資・AIリスク審査</button>
         <button id="nav-realestate" onclick="switchView('realestate')" class="nav-item"><span class="tabular">03</span> 街・家・建築の50年変化</button>
         <button id="nav-mc10k" onclick="switchView('mc10k')" class="nav-item"><span class="tabular">04</span> 未来の写真＆1万通りガチャ</button>
         <button id="nav-pilot" onclick="switchView('pilot')" class="nav-item"><span class="tabular">05</span> 今日やるクエスト一覧</button>
@@ -561,6 +628,21 @@
         <button id="nav-abm" onclick="switchView('abm')" class="nav-item"><span class="tabular">10</span> 1,000人の住民の動き</button>
         <button id="nav-qa" onclick="switchView('qa')" class="nav-item"><span class="tabular">11</span> よくあるギモン12問</button>
       </nav>
+      <div class="game-meta-strip">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <strong id="meta-rank-badge" class="tabular" style="font-size: 12.5px;">Lv.1 🌱 見習いチャレンジャー</strong>
+          <div class="meta-exp-track"><div id="meta-exp-fill" class="meta-exp-fill" style="width: 10%;"></div></div>
+          <span id="meta-exp-label" class="caption-label tabular">0 EXP</span>
+        </div>
+        <button type="button" id="btn-next-mission" class="btn" style="min-height: 28px; padding: 3px 10px; font-size: 12px; border-color: var(--color-accent); color: var(--color-accent);">🎯 次のミッションを読み込み中…</button>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <button type="button" id="btn-trophy-drawer" onclick="MetaGame.toggleDrawer()" class="btn" style="min-height: 28px; padding: 3px 10px; font-size: 12px;">🏆 実績図鑑 (0/14)</button>
+          <button type="button" id="btn-sfx-toggle" onclick="GameSfx.toggle()" class="btn" style="min-height: 28px; padding: 3px 10px; font-size: 12px;">🔊 効果音 ON</button>
+        </div>
+      </div>
+      <div id="trophy-drawer-panel" class="hidden" style="padding: 12px 0; border-top: 1px solid var(--color-border);">
+        <div id="trophy-drawer-grid" class="grid-12" style="gap: 8px;"></div>
+      </div>
     </div>
   </header>
 
@@ -709,6 +791,15 @@
     <div id="view-lifeline">
 
       <section class="swiss-section">
+        <div class="flex-between" style="padding: 10px 14px; margin-bottom: 18px; background: var(--color-surface); border: 1px solid var(--color-border);">
+          <strong style="font-size: 13px;">🚀 目的別クイックスタート（学生〜社会人・経営者対応）：</strong>
+          <div class="btn-row">
+            <button type="button" onclick="MetaGame.jumpToMission('revorisk')" class="btn btn-primary" style="min-height: 30px; padding: 4px 12px; font-size: 12px;">⚖️ マルチ業種統合・投資リスク＆AI危機審査</button>
+            <button type="button" onclick="MetaGame.jumpToMission('custombiz')" class="btn" style="min-height: 30px; padding: 4px 12px; font-size: 12px;">💼 社長の5カ年リアル経営カードゲーム</button>
+            <button type="button" onclick="MetaGame.jumpToMission('rpg')" class="btn" style="min-height: 30px; padding: 4px 12px; font-size: 12px;">🎮 3D開拓島RPG</button>
+            <button type="button" onclick="toggleLifelinePlay()" class="btn" style="min-height: 30px; padding: 4px 12px; font-size: 12px;">🎬 人生50年アニメ再生</button>
+          </div>
+        </div>
         <div class="grid-12">
           <!-- Left Column: Past Timeline & Self-Understanding 3 Pillars Input -->
           <div class="col-4 stack-md">
@@ -1249,6 +1340,25 @@
           </div>
 
           <div class="col-8 stack-lg">
+            <!-- Turn-Based 5-Year Realistic CEO Card Decision Game + Link to AI直結賃貸 Risk Cockpit -->
+            <div id="ceo-turn-game-box" class="stack-md" style="padding: 18px; background: var(--color-surface); border: 2px solid var(--color-border-strong);">
+              <div class="flex-between">
+                <div>
+                  <span class="caption-label accent-text">TURN-BASED EXECUTIVE DECISION CHALLENGE</span>
+                  <h3 style="margin-top: 2px;">🎮 社長の5カ年リアル経営チャレンジ（毎年の危機×3択の経営判断カード）</h3>
+                </div>
+                <div class="btn-row">
+                  <button type="button" onclick="RevoEngine.pullFromTab02(); switchView('revorisk');" class="btn btn-primary" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">⚖️ 事業投資・AIリスク審査で精密検証</button>
+                  <button type="button" onclick="CeoTurnGame.initFromInputs(true)" class="btn" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">🔄 左の事業条件で1年目から開始</button>
+                </div>
+              </div>
+              <div id="ceo-game-kpis" class="metric-strip"></div>
+              <canvas id="ceoGameCanvas" width="760" height="175" class="canvas-frame"></canvas>
+              <div id="ceo-event-box" style="padding: 12px 14px; background: var(--color-bg); border-left: 3px solid var(--color-accent);"></div>
+              <div id="ceo-cards-grid" class="grid-12" style="gap: 10px;"></div>
+              <div id="ceo-game-log" class="meta-text tabular" style="padding: 8px 12px; background: var(--color-bg); border: 1px solid var(--color-border);"></div>
+            </div>
+
             <!-- Top KPI Strip for 2026 vs Selected Year vs 2046 -->
             <div class="metric-strip">
               <div class="metric-cell">
@@ -1486,6 +1596,251 @@
                 <h3>04 家庭のお金・住宅ローンの未来シミュレーション</h3>
                 <div id="pe-house-box" class="hairline-list"></div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW BIZ-RISK: MULTI-ENGINE × GITHUB OSS QUANT RISK, BLACK SWAN & AI SIM   -->
+    <!-- =================================================================== -->
+    <div id="view-revorisk" class="hidden">
+      <section class="swiss-section">
+        <!-- Top Executive Control Bar -->
+        <div class="stack-md" style="padding: 18px; margin-bottom: 24px; background: var(--color-surface); border: 1px solid var(--color-border-strong);">
+          <div class="flex-between">
+            <div>
+              <div class="accent-rule"></div>
+              <h2>⚖️ マルチ業種統合・投資判断 ＆ ブラックスワン ＆ AI環境変化シミュレーター</h2>
+              <p class="meta-text" style="margin-top: 6px;">
+                マルチ業種 5大収益エンジン（CCC売掛ラグ・供給キャパ上限）に、GitHub定量リスクOSS知見（Mertonジャンプ拡散・95% CVaR期待ショートフォール・Half-Kelly最適投資上限・リアルオプション撤退価値・マルコフAI環境激変）を統合した経営者・投資委員会グレードの意思決定コックピットです。
+              </p>
+            </div>
+            <div class="btn-row">
+              <button type="button" id="rv-hor-12" onclick="RevoEngine.setHorizon(12)" class="btn" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">12ヶ月 (初年度キャッシュ谷検証)</button>
+              <button type="button" id="rv-hor-36" onclick="RevoEngine.setHorizon(36)" class="btn btn-primary" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">36ヶ月 (3ヶ年Jカーブ＆NPV)</button>
+              <button type="button" onclick="RevoEngine.pullFromTab02()" class="btn" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">📥 02タブの条件を取込</button>
+              <button type="button" onclick="RevoEngine.pushToTab02()" class="btn" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">📤 02タブ(50年計画)へ反映</button>
+              <button type="button" onclick="RevoEngine.exportReportCsv()" class="btn" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">📥 CSV出力</button>
+              <button type="button" onclick="RevoEngine.copyExecutiveBrief()" class="btn" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">📋 稟議サマリーコピー</button>
+            </div>
+          </div>
+
+          <div class="grid-12" style="align-items: end; gap: 12px;">
+            <div class="col-6 stack-sm">
+              <label for="rv-model-select" class="caption-label">01 業種・収益エンジンモデル選択（全8業種テンプレート）</label>
+              <select id="rv-model-select" class="swiss-select" onchange="RevoEngine.loadModel(this.value, true)">
+                <option value="revo_v3">🏗️ 住環境メンテ・施工×定額会員PF (3層ハイブリッド収益型)</option>
+                <option value="saas">💻 B2B SaaS・バーティカルAIクラウド (MRR積み上げストック型)</option>
+                <option value="ai_bpo">🤖 AIエージェントBPO・自律業務代行 (AIレバレッジ×月額顧問型)</option>
+                <option value="ec">🛒 EC・D2C・越境リピート物販ブランド (新規＋定期コホート型)</option>
+                <option value="retail">🏢 店舗・サロン・クリニック・飲食 (席数キャパ稼働＆常連リピート型)</option>
+                <option value="agency">🤝 受託開発・コンサル・士業・BtoB専門施工 (工数＆検収サイト型)</option>
+                <option value="marketplace">🔄 マッチングPF・M&A仲介・人材紹介 (GMV×テイクレート手数料型)</option>
+                <option value="education">🎓 オンラインスクール・リスキリング講座 (認定講座＋コミュニティ型)</option>
+              </select>
+            </div>
+            <div class="col-6 stack-sm">
+              <label for="rv-quick-nlp" class="caption-label">02 自然文クイック条件入力（商談・会議中に一括反映）</label>
+              <div style="display: flex; gap: 6px;">
+                <input id="rv-quick-nlp" type="text" class="swiss-input" placeholder="例: リード160件 成約率52% 固定費105万 手元資金1500万 入金1ヶ月 解約率3%">
+                <button type="button" onclick="RevoEngine.parseQuickText()" class="btn btn-primary" style="min-height: 38px; white-space: nowrap;">✨ 反映</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-12">
+          <!-- LEFT 4 COLS: AI Environment Vectors, Real Options & AI直結賃貸 15 Parameters -->
+          <div class="col-4 stack-md">
+            <!-- AI Regime Shift & Real Options Panel -->
+            <div class="stack-sm" style="padding: 16px; background: var(--color-surface); border: 2px solid var(--color-border-strong);">
+              <span class="caption-label accent-text">AI DISRUPTION &amp; REAL OPTIONS ENGINE</span>
+              <h3>🤖 今後のAI環境変化 ＆ 投資防衛ルール</h3>
+
+              <div class="flex-between">
+                <label for="rv-ai-decay" class="meta-text">① AI価格破壊・単価デフレ圧力</label>
+                <span id="lbl-rv-ai-decay" class="tabular">-8%/年</span>
+              </div>
+              <input id="rv-ai-decay" type="range" min="0" max="35" step="1" value="8" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between">
+                <label for="rv-ai-churn" class="meta-text">② AI代替による既存客離脱リスク</label>
+                <span id="lbl-rv-ai-churn" class="tabular">+1.5%/月</span>
+              </div>
+              <input id="rv-ai-churn" type="range" min="0" max="10" step="0.5" value="1.5" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between">
+                <label for="rv-ai-self" class="meta-text">③ 自社AIエージェント武装・省力化率</label>
+                <span id="lbl-rv-ai-self" class="tabular">35%省力化</span>
+              </div>
+              <input id="rv-ai-self" type="range" min="0" max="75" step="5" value="35" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between divider-top" style="padding-top: 8px;">
+                <label for="rv-jump-lambda" class="meta-text">④ ブラックスワン発生強度 (Merton λ)</label>
+                <span id="lbl-rv-jump-lambda" class="tabular">年率20%</span>
+              </div>
+              <input id="rv-jump-lambda" type="range" min="0" max="60" step="5" value="20" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between">
+                <label for="rv-stoploss" class="meta-text">⑤ 撤退損切りライン (Real Option)</label>
+                <span id="lbl-rv-stoploss" class="tabular">資金45%毀損で撤退</span>
+              </div>
+              <input id="rv-stoploss" type="range" min="15" max="100" step="5" value="45" oninput="RevoEngine.runAll(false)">
+
+              <label class="meta-text" style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 4px;">
+                <input id="rv-opt-expand" type="checkbox" checked onchange="RevoEngine.runAll(false)" style="width: auto;">
+                好調時（稼働85%超＆黒字）の段階拡大オプションを有効化
+              </label>
+
+              <div class="flex-between divider-top" style="padding-top: 8px;">
+                <label for="rv-networth-man" class="meta-text">⑥ 保有総資産・投資母体枠 (万円)</label>
+                <input id="rv-networth-man" type="number" class="swiss-input tabular" value="2500" min="100" step="100" style="width: 110px; min-height: 30px; padding: 4px 8px;" oninput="RevoEngine.runAll(false)">
+              </div>
+              <p class="meta-text" style="font-size: 11.5px;">※Half-Kelly基準により「総資産のうち最大いくらまでこの事業に張ってよいか」を算出します。</p>
+            </div>
+
+            <!-- AI直結賃貸 15 Funnel, Capacity & CCC Sliders -->
+            <div class="stack-sm" style="padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border);">
+              <span class="caption-label">BUSINESS FUNNEL, CAPACITY &amp; CCC WORKING CAPITAL</span>
+              <h3>📊 ファネル・供給キャパ・売掛サイト条件</h3>
+
+              <div class="flex-between"><label for="rv-inp-leads" class="meta-text">月初の見込み流入数</label><span id="rv-lbl-leads" class="tabular">95件</span></div>
+              <input id="rv-inp-leads" type="range" min="5" max="3500" step="5" value="95" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-growth" class="meta-text">流入の月次成長率</label><span id="rv-lbl-growth" class="tabular">6%</span></div>
+              <input id="rv-inp-growth" type="range" min="-20" max="30" step="1" value="6" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-qualified" class="meta-text">有効商談・見積化率</label><span id="rv-lbl-qualified" class="tabular">75%</span></div>
+              <input id="rv-inp-qualified" type="range" min="5" max="100" step="1" value="75" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-conversion" class="meta-text">商談からの成約率</label><span id="rv-lbl-conversion" class="tabular">48%</span></div>
+              <input id="rv-inp-conversion" type="range" min="2" max="100" step="1" value="48" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-eligible" class="meta-text">課金対象比率 (中抜き防止)</label><span id="rv-lbl-eligible" class="tabular">88%</span></div>
+              <input id="rv-inp-eligible" type="range" min="10" max="100" step="1" value="88" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-priceFactor" class="meta-text">提供単価倍率 (プライシング)</label><span id="rv-lbl-priceFactor" class="tabular">100%</span></div>
+              <input id="rv-inp-priceFactor" type="range" min="40" max="250" step="5" value="100" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-fixedCostMan" class="meta-text">月額固定費 (人件費・家賃等)</label><span id="rv-lbl-fixedCostMan" class="tabular">95万円</span></div>
+              <input id="rv-inp-fixedCostMan" type="range" min="5" max="1200" step="5" value="95" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-leadCost" class="meta-text">1リード獲得実費 (CPL)</label><span id="rv-lbl-leadCost" class="tabular">800円</span></div>
+              <input id="rv-inp-leadCost" type="range" min="0" max="30000" step="100" value="800" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-rework" class="meta-text">月次解約・離脱・手戻り率</label><span id="rv-lbl-rework" class="tabular">5%</span></div>
+              <input id="rv-inp-rework" type="range" min="0" max="50" step="0.5" value="5" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-opsHours" class="meta-text">月間フロント・商談対応枠</label><span id="rv-lbl-opsHours" class="tabular">140時間</span></div>
+              <input id="rv-inp-opsHours" type="range" min="10" max="800" step="10" value="140" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-contractorDays" class="meta-text">月間現場提供・供給キャパ枠</label><span id="rv-lbl-contractorDays" class="tabular">120人日</span></div>
+              <input id="rv-inp-contractorDays" type="range" min="5" max="800" step="5" value="120" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-cccMonths" class="meta-text">売掛回収サイト (完工〜入金CCC)</label><span id="rv-lbl-cccMonths" class="tabular">2ヶ月</span></div>
+              <input id="rv-inp-cccMonths" type="range" min="0" max="8" step="1" value="2" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-initialCashMan" class="meta-text">開始時の手元事業資金</label><span id="rv-lbl-initialCashMan" class="tabular">1000万円</span></div>
+              <input id="rv-inp-initialCashMan" type="range" min="50" max="8000" step="50" value="1000" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-setupCostMan" class="meta-text">初期立上げ・開発投資額</label><span id="rv-lbl-setupCostMan" class="tabular">180万円</span></div>
+              <input id="rv-inp-setupCostMan" type="range" min="0" max="4000" step="20" value="180" oninput="RevoEngine.runAll(false)">
+
+              <div class="flex-between"><label for="rv-inp-debtPayMan" class="meta-text">毎月の借入元本返済額</label><span id="rv-lbl-debtPayMan" class="tabular">14万円</span></div>
+              <input id="rv-inp-debtPayMan" type="range" min="0" max="250" step="2" value="14" oninput="RevoEngine.runAll(false)">
+            </div>
+          </div>
+
+          <!-- RIGHT 8 COLS: Verdict, Risk Metrics, Dual Canvases, Black Swans, Goal Seek & 6 Experts -->
+          <div class="col-8 stack-lg">
+            <!-- Verdict Banner -->
+            <div id="rv-verdict-badge" style="padding: 14px 18px; background: var(--color-surface); border-left: 4px solid #10b981; border-top: 1px solid var(--color-border); border-right: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);"></div>
+
+            <!-- Quantitative Risk Metrics (NPV, VaR/CVaR, Ruin, Half-Kelly) -->
+            <div id="rv-quant-kpis" class="metric-strip"></div>
+
+            <!-- Unit Economics, CCC & Capacity Bottleneck Strip -->
+            <div id="rv-unit-kpis" class="metric-strip"></div>
+
+            <!-- Dual 60fps Canvas Stage: 6-Axis Radar + 1,000-Run Cone of Uncertainty Fan Chart -->
+            <div class="grid-12" style="gap: 12px;">
+              <div class="col-5">
+                <canvas id="revoRadarCanvas" width="380" height="260" class="canvas-frame"></canvas>
+              </div>
+              <div class="col-7">
+                <canvas id="revoRiskAnimCanvas" width="520" height="260" class="canvas-frame"></canvas>
+              </div>
+            </div>
+
+            <!-- 5 Interactive Black Swan Stress Triggers & Antifragile Patches -->
+            <div class="stack-sm" style="padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border);">
+              <div class="flex-between">
+                <h3>🦢 5大ブラックスワン危機ストレステスト（複数同時発火 ＆ アンチフラジャイル対策検証）</h3>
+                <button type="button" onclick="RevoEngine.activeBlackSwans={}; RevoEngine.runAll(true);" class="btn" style="min-height: 26px; padding: 2px 10px; font-size: 11.5px;">危機をすべて解除</button>
+              </div>
+              <div id="rv-bs-grid" class="grid-12" style="gap: 10px;"></div>
+            </div>
+
+            <!-- Goal Seek Binary Solver & Tornado Sensitivity Top 5 -->
+            <div class="grid-12" style="gap: 12px;">
+              <div class="col-6 stack-sm" style="padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border);">
+                <h3>🎯 逆算ゴールシーク（目標から必要数値を自動逆算）</h3>
+                <div class="stack-sm">
+                  <label class="caption-label" for="rv-gs-metric">達成したい目標指標</label>
+                  <select id="rv-gs-metric" class="swiss-select">
+                    <option value="totalProfit">期間累計の営業利益（万円）</option>
+                    <option value="minCash">期間中の最低現金残高・死の谷防衛ライン（万円）</option>
+                    <option value="npv">割引現在価値 NPV（万円）</option>
+                  </select>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input id="rv-gs-target" type="number" class="swiss-input tabular" value="2000" step="100" placeholder="目標額(万円)">
+                    <span class="meta-text" style="white-space: nowrap;">万円 を</span>
+                  </div>
+                  <label class="caption-label" for="rv-gs-lever">動かして達成するレバー（変数）</label>
+                  <div style="display: flex; gap: 8px;">
+                    <select id="rv-gs-lever" class="swiss-select">
+                      <option value="leads">月初の見込み流入数</option>
+                      <option value="conversion">商談からの成約率</option>
+                      <option value="priceFactor">提供単価倍率</option>
+                      <option value="fixedCostMan">月額固定費</option>
+                      <option value="rework">月次解約・離脱・手戻り率</option>
+                      <option value="contractorDays">月間現場提供・供給キャパ枠</option>
+                    </select>
+                    <button type="button" onclick="RevoEngine.solveGoalSeek()" class="btn btn-primary" style="white-space: nowrap;">逆算実行</button>
+                  </div>
+                  <div id="rv-gs-result" class="meta-text" style="padding: 10px; background: var(--color-bg); border: 1px solid var(--color-border);">
+                    目標額とレバーを選んで「逆算実行」を押すと、キャパ上限を加味した二分探索で必要値を即座に算出します。
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-6 stack-sm" style="padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border);">
+                <h3>🌪️ トルネード感度分析 TOP5（どこを直せば一番効くか）</h3>
+                <div id="rv-sensitivity-list" class="stack-sm"></div>
+              </div>
+            </div>
+
+            <!-- 3-Slot Portfolio Comparison (Plan A / B / C) -->
+            <div class="stack-sm" style="padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border);">
+              <h3>⚖️ 複数事業・戦略ポートフォリオ比較（案A / 案B / 案C リスク調整後リターン勝敗判定）</h3>
+              <div id="rv-portfolio-grid" class="grid-12" style="gap: 10px;"></div>
+            </div>
+
+            <!-- 6-Expert Devil's Advocate Committee -->
+            <div class="stack-sm" style="padding: 16px; background: var(--color-surface); border: 1px solid var(--color-border);">
+              <h3>👥 6人の専門審査官による冷徹な実数値壁打ち ＆ ワンクリック改善パッチ</h3>
+              <div id="rv-committee-grid" class="grid-12" style="gap: 10px;"></div>
+            </div>
+
+            <!-- GitHub OSS Attribution & Honest Model Limitations -->
+            <div class="stack-sm" style="padding: 14px 16px; background: var(--color-bg); border: 1px solid var(--color-border);">
+              <strong>📚 統合したGitHub定量リスク・システムダイナミクスOSS手法 ＆ 数理モデルの限界（誠実な開示）</strong>
+              <p class="meta-text" style="font-size: 12px; line-height: 1.55;">
+                ・採用アルゴリズム系譜：<code>dcajasn/Riskfolio-Lib</code> &amp; <code>ranaroussi/quantstats</code>（95% VaR / CVaR 期待ショートフォール）、<code>lballabio/QuantLib</code> &amp; <code>rsadykhov/stochastic-models</code>（Mertonポアソン・ジャンプ拡散＋危機時相関崩壊）、<code>QuantSingularity/Heston-Merton-LSMC-Barrier-Options</code>（撤退・段階拡大リアルオプションCRN評価）、<code>QuantSingularity/Kelly-ML-Portfolio-Optimization</code>（Half-Kelly最適資金配分）、<code>transentis/bptk_py</code> &amp; <code>salib/SALib</code>（4状態マルコフAIレジーム遷移＆OAT感度分析）。<br>
+                ・<strong>モデルの限界と実務上の注意</strong>：①成約率や解約率が未計測の「仮置き」である場合、CVaRやKelly比率も仮定に依存します（まず少額PoCの2週間〜1ヶ月実測値で上書きしてください）。②法改正による事業モデル自体の禁止など「構造外の未知事象（Unknown Unknowns）」は確率計算だけでゼロにはできないため、契約書上の免責・中途解約条項と併用してください。
+              </p>
             </div>
           </div>
         </div>
@@ -2250,18 +2605,27 @@
 
     function switchView(v) {
       app.view = v;
-      ['rpg', 'lifeline', 'custombiz', 'realestate', 'pilot', 'mc10k', 'biz3', 'society4', 'model', 'global', 'abm', 'qa'].forEach(k => {
+      ['rpg', 'lifeline', 'custombiz', 'revorisk', 'realestate', 'pilot', 'mc10k', 'biz3', 'society4', 'model', 'global', 'abm', 'qa'].forEach(k => {
         const vEl = document.getElementById(`view-${k}`);
         const nEl = document.getElementById(`nav-${k}`);
         if (vEl) vEl.classList.toggle('hidden', k !== v);
         if (nEl) nEl.classList.toggle('active', k === v);
       });
+      if (typeof MetaGame !== 'undefined' && MetaGame.initialized) {
+        MetaGame.onTabVisited(v);
+      }
+      if (typeof GameSfx !== 'undefined' && typeof MetaGame !== 'undefined' && MetaGame.initialized) {
+        GameSfx.play('click');
+      }
       if (v === 'lifeline') {
         runLifelineSim();
       }
       if (v === 'custombiz') {
         runCustomBizSim();
         renderGithubFeatures();
+      }
+      if (v === 'revorisk' && typeof RevoEngine !== 'undefined') {
+        RevoEngine.runAll(false);
       }
       if (v === 'realestate') {
         runRealEstate50Sim();
@@ -2279,6 +2643,7 @@
         const el = document.getElementById(`mcc-${val}`);
         if (el) el.classList.toggle('active', val === n);
       });
+      if (typeof MetaGame !== 'undefined' && MetaGame.initialized) MetaGame.unlock('mc_oracle');
       executeMonteCarlo();
     }
 
@@ -3463,12 +3828,16 @@
       const cur = !!app.actionState.completed_tasks[kit.taskKey];
       app.actionState.completed_tasks[kit.taskKey] = !cur;
       saveActionState();
+      if (typeof MetaGame !== 'undefined') MetaGame.unlock('quest_finisher');
+      if (typeof GameSfx !== 'undefined') GameSfx.play('coin');
       renderPilotCockpit();
     }
 
     function toggleChecklistTask(key) {
       app.actionState.completed_tasks[key] = !app.actionState.completed_tasks[key];
       saveActionState();
+      if (typeof MetaGame !== 'undefined') MetaGame.unlock('quest_finisher');
+      if (typeof GameSfx !== 'undefined') GameSfx.play('coin');
       renderPilotCockpit();
     }
 
@@ -3673,6 +4042,7 @@
       document.getElementById('cb-disp').value = p.disp;
       if (typeof applyBizUnitPreset === 'function') applyBizUnitPreset(presetKey);
       runCustomBizSim();
+      if (typeof CeoTurnGame !== 'undefined') CeoTurnGame.initFromInputs(true);
       renderGithubFeatures();
     }
 
@@ -4241,6 +4611,12 @@
       if (!kpiBox) return;
       const bp = computePracticalBizPlan();
       app.lastBizPlan = bp;
+      if (typeof MetaGame !== 'undefined' && MetaGame.initialized && bp.ltvCacRatio >= 3.0 && bp.safetyMarginPct > 0) {
+        MetaGame.unlock('unit_master');
+      }
+      if (typeof CeoTurnGame !== 'undefined' && !CeoTurnGame.state) {
+        CeoTurnGame.initFromInputs(false);
+      }
 
       const ltvStatus = bp.ltvCacRatio >= 3.0 ? '優良 (≥3.0x)' : (bp.ltvCacRatio >= 1.5 ? '標準 (1.5〜3x)' : '要改善 (<1.5x)');
       const paybackTxt = bp.capexMan <= 0
@@ -5253,6 +5629,7 @@
       });
       lfYearDecisions[lfScrubYear] = { mindset: mode, action: mode, customMindset: '', customAction: '' };
       syncDecisionControlsToScrubYear();
+      if (mode === 'antifragile' && typeof MetaGame !== 'undefined') MetaGame.unlock('lifeline_rebound');
       runLifelineSim();
     }
 
@@ -7904,6 +8281,9 @@
 
     function applyCodexRpgSnapshot(snap) {
       if (!snap) return;
+      if (snap.buildings && snap.buildings.length > 0 && typeof MetaGame !== 'undefined' && MetaGame.initialized) {
+        MetaGame.unlock('island_pioneer');
+      }
       if (typeof snap.year === "number" && snap.year !== rpgState.year) {
         rpgState.year = snap.year;
         const mSl = document.getElementById("rpg-master-yr");
@@ -7973,6 +8353,7 @@
     // --- Tab 01: Lifeline 0-to-2076 Life Journey Animation ---
     app.lfPlayTimer = null;
     function toggleLifelinePlay() {
+      if (typeof MetaGame !== 'undefined') MetaGame.unlock('lifeline_rebound');
       const btn = document.getElementById('btn-lf-play');
       if (app.lfPlayTimer) {
         clearInterval(app.lfPlayTimer);
@@ -8271,6 +8652,8 @@
     app.questPulseBoost = 0;
     function triggerQuestAnimPulse() {
       app.questPulseBoost = 90;
+      if (typeof MetaGame !== 'undefined') MetaGame.unlock('quest_finisher');
+      if (typeof GameSfx !== 'undefined') GameSfx.play('build');
     }
 
     function renderQuestAnimCanvas() {
@@ -8840,11 +9223,2239 @@
       ctx.fillText(`👉 結論：${item[1].slice(0, 56)}…`, 16, h - 18);
     }
 
+    // =========================================================================
+    // GAME DESIGNER UPGRADE: WEB AUDIO JUICE, META-PROGRESSION & 5Y CEO GAME
+    // =========================================================================
+
+    const GameSfx = {
+      enabled: true,
+      ctx: null,
+      init() {
+        const saved = safeStorageGet('sim2046_sfx_v1');
+        if (saved === 'off') this.enabled = false;
+        this.updateBtn();
+      },
+      ensureCtx() {
+        if (!this.enabled) return null;
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        if (!this.ctx) {
+          try { this.ctx = new AC(); } catch (e) { return null; }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+        return this.ctx;
+      },
+      toggle() {
+        this.enabled = !this.enabled;
+        safeStorageSet('sim2046_sfx_v1', this.enabled ? 'on' : 'off');
+        this.updateBtn();
+        if (this.enabled) this.play('coin');
+      },
+      updateBtn() {
+        const btn = document.getElementById('btn-sfx-toggle');
+        if (btn) btn.textContent = this.enabled ? '🔊 効果音 ON' : '🔇 効果音 OFF';
+      },
+      tone(freq, dur, type = 'triangle', vol = 0.08, delay = 0) {
+        const ctx = this.ensureCtx();
+        if (!ctx) return;
+        try {
+          const t0 = ctx.currentTime + delay;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, t0);
+          gain.gain.setValueAtTime(Math.max(0.001, vol), t0);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t0);
+          osc.stop(t0 + dur + 0.01);
+        } catch (e) {}
+      },
+      play(kind) {
+        if (!this.enabled) return;
+        if (kind === 'click') {
+          this.tone(660, 0.045, 'sine', 0.05, 0);
+        } else if (kind === 'coin') {
+          this.tone(987.77, 0.08, 'square', 0.05, 0);
+          this.tone(1318.51, 0.22, 'triangle', 0.08, 0.07);
+        } else if (kind === 'build') {
+          this.tone(523.25, 0.09, 'triangle', 0.07, 0);
+          this.tone(659.25, 0.09, 'triangle', 0.07, 0.07);
+          this.tone(783.99, 0.18, 'triangle', 0.09, 0.14);
+        } else if (kind === 'alert') {
+          this.tone(220, 0.12, 'sawtooth', 0.06, 0);
+          this.tone(185, 0.18, 'sawtooth', 0.06, 0.12);
+        } else if (kind === 'fanfare') {
+          [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+            this.tone(f, i === 3 ? 0.36 : 0.11, 'triangle', 0.09, i * 0.08);
+          });
+        }
+      },
+      popText(text, accent = true, anchorEl = null) {
+        try {
+          const el = document.createElement('div');
+          el.className = 'juice-float-tag' + (accent ? ' juice-accent' : '');
+          el.textContent = text;
+          let x = window.innerWidth / 2 - 60;
+          let y = 72;
+          if (anchorEl && anchorEl.getBoundingClientRect) {
+            const r = anchorEl.getBoundingClientRect();
+            if (r.width > 0) {
+              x = Math.max(16, Math.min(window.innerWidth - 180, r.left + r.width / 2 - 50));
+              y = Math.max(54, r.top - 8);
+            }
+          }
+          el.style.left = `${Math.round(x)}px`;
+          el.style.top = `${Math.round(y)}px`;
+          document.body.appendChild(el);
+          setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 1050);
+        } catch (e) {}
+      }
+    };
+
+    const TROPHY_DEFS = [
+      { id: 'first_step', icon: '🧭', title: '未来探索の第一歩', desc: '3つ以上のタブを切り替えて世界を探索した', exp: 60, tab: 'rpg' },
+      { id: 'island_pioneer', icon: '🏯', title: '開拓島の建築家', desc: '開拓RPGゲームで島の施設を建設した', exp: 100, tab: 'rpg' },
+      { id: 'lifeline_rebound', icon: '🔥', title: '人生V字回復の設計者', desc: '人生年表で逆転思考を選ぶか人生アニメを再生した', exp: 90, tab: 'lifeline' },
+      { id: 'unit_master', icon: '📊', title: '優良ユニットエコノミクス', desc: '実務事業計画で LTV/CAC 3.0倍以上＆黒字余裕を達成', exp: 100, tab: 'custombiz' },
+      { id: 'ceo_first_turn', icon: '🃏', title: '社長の初決断', desc: '社長の5カ年リアル経営ゲームで最初の1年目を決断した', exp: 80, tab: 'custombiz' },
+      { id: 'ceo_clear', icon: '🏅', title: '5カ年黒字サバイバー', desc: '社長の5カ年経営ゲームを資金ショートせず5年間完走した', exp: 160, tab: 'custombiz' },
+      { id: 'ceo_unicorn', icon: '💎', title: '企業価値3億円社長', desc: '社長の5カ年経営ゲームで推定企業価値3億円を突破した', exp: 220, tab: 'custombiz' },
+      { id: 'revo_blackswan', icon: '🦢', title: 'ブラックスワン耐性監査官', desc: '事業投資・AIリスク審査でブラックスワン危機を発火検証した', exp: 110, tab: 'revorisk' },
+      { id: 'revo_go_verdict', icon: '⚖️', title: '投資委員会GO承認', desc: '事業投資・AIリスク審査で破産率10%未満＆LTV/CAC 3倍のGO判定を獲得', exp: 150, tab: 'revorisk' },
+      { id: 'town_architect', icon: '🏗️', title: '未来都市アーキテクト', desc: '街・家・建築の50年変化シミュレーターを動かした', exp: 80, tab: 'realestate' },
+      { id: 'mc_oracle', icon: '🎰', title: '1万通りの未来観測者', desc: '10,000通りのモンテカルロ実験またはタイムマシンを実行', exp: 90, tab: 'mc10k' },
+      { id: 'quest_finisher', icon: '⚡', title: '最後のひと押し(9)実行者', desc: '今日やるクエストで完了チェックまたはロケット演出を発動', exp: 100, tab: 'pilot' },
+      { id: 'world_explorer', icon: '🌍', title: '地球規模の視座', desc: '未来の仕事・社会・世界・1000人住民タブを3つ以上探索', exp: 90, tab: 'global' },
+      { id: 'grand_scholar', icon: '💡', title: '2046未来の賢者', desc: 'よくあるギモン12問の図解アニメーションを確認した', exp: 80, tab: 'qa' }
+    ];
+
+    const PLAYER_RANKS = [
+      { minExp: 0, lv: 1, title: '🌱 見習いチャレンジャー' },
+      { minExp: 150, lv: 2, title: '🧭 未来開拓ルーキー' },
+      { minExp: 350, lv: 3, title: '💼 黒字化ビジネスオーナー' },
+      { minExp: 600, lv: 4, title: '🏯 聖域ストラテジスト' },
+      { minExp: 900, lv: 5, title: '🚀 億越え名経営者' },
+      { minExp: 1200, lv: 6, title: '👑 2076伝説のグランドマスター' }
+    ];
+
+    const MetaGame = {
+      state: { exp: 0, trophies: {}, visited: {}, ceoBestValMan: 0 },
+      initialized: false,
+      init() {
+        const raw = safeStorageGet('sim2046_meta_v1');
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') {
+              this.state = {
+                exp: Number(parsed.exp) || 0,
+                trophies: parsed.trophies || {},
+                visited: parsed.visited || {},
+                ceoBestValMan: Number(parsed.ceoBestValMan) || 0
+              };
+            }
+          } catch (e) {}
+        }
+        this.initialized = true;
+        this.renderBar();
+      },
+      save() {
+        safeStorageSet('sim2046_meta_v1', JSON.stringify(this.state));
+      },
+      onTabVisited(v) {
+        if (!v) return;
+        this.state.visited[v] = true;
+        const visKeys = Object.keys(this.state.visited);
+        if (visKeys.length >= 3) this.unlock('first_step', true);
+        if (v === 'realestate') this.unlock('town_architect', true);
+        if (v === 'qa') this.unlock('grand_scholar', true);
+        const macroVisited = ['biz3', 'society4', 'model', 'model', 'global', 'abm'].filter(k => this.state.visited[k]);
+        if (macroVisited.length >= 3) this.unlock('world_explorer', true);
+        this.save();
+        this.renderBar();
+      },
+      unlock(trophyId, playSound = true) {
+        if (this.state.trophies[trophyId]) return false;
+        const def = TROPHY_DEFS.find(t => t.id === trophyId);
+        if (!def) return false;
+        const prevRank = this.getRank().lv;
+        this.state.trophies[trophyId] = Date.now();
+        this.state.exp += def.exp;
+        this.save();
+        const newRank = this.getRank().lv;
+        if (this.initialized && playSound) {
+          GameSfx.play(newRank > prevRank ? 'fanfare' : 'coin');
+          GameSfx.popText(`🏆 ${def.title} (+${def.exp} EXP)`, true, document.getElementById('btn-trophy-drawer'));
+        }
+        this.renderBar();
+        return true;
+      },
+      addExp(amount, label = '') {
+        if (amount <= 0) return;
+        this.state.exp += amount;
+        this.save();
+        if (label && this.initialized) {
+          GameSfx.popText(`${label} +${amount} EXP`, false, document.getElementById('meta-rank-badge'));
+        }
+        this.renderBar();
+      },
+      getRank() {
+        let cur = PLAYER_RANKS[0];
+        let next = PLAYER_RANKS[1] || null;
+        for (let i = 0; i < PLAYER_RANKS.length; i++) {
+          if (this.state.exp >= PLAYER_RANKS[i].minExp) {
+            cur = PLAYER_RANKS[i];
+            next = PLAYER_RANKS[i + 1] || null;
+          }
+        }
+        return { ...cur, nextMinExp: next ? next.minExp : cur.minExp + 300 };
+      },
+      getNextMission() {
+        const order = ['ceo_first_turn', 'revo_blackswan', 'revo_go_verdict', 'island_pioneer', 'ceo_clear', 'lifeline_rebound', 'mc_oracle', 'quest_finisher', 'ceo_unicorn', 'town_architect', 'world_explorer', 'grand_scholar'];
+        for (const id of order) {
+          if (!this.state.trophies[id]) {
+            const def = TROPHY_DEFS.find(t => t.id === id);
+            if (def) return def;
+          }
+        }
+        return TROPHY_DEFS.find(t => !this.state.trophies[t.id]) || null;
+      },
+      jumpToMission(tabId) {
+        let target = tabId;
+        if (target === 'pilot' && !document.getElementById('view-pilot') && document.getElementById('view-pilot')) {
+          target = 'pilot';
+        }
+        GameSfx.play('click');
+        switchView(target);
+        const drawer = document.getElementById('trophy-drawer-panel');
+        if (drawer) drawer.classList.add('hidden');
+        if (target === 'custombiz') {
+          const ceoSec = document.getElementById('ceo-turn-game-box');
+          if (ceoSec && ceoSec.scrollIntoView) ceoSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      },
+      toggleDrawer() {
+        const panel = document.getElementById('trophy-drawer-panel');
+        if (!panel) return;
+        GameSfx.play('click');
+        panel.classList.toggle('hidden');
+        this.renderBar();
+      },
+      renderBar() {
+        const rk = this.getRank();
+        const badgeEl = document.getElementById('meta-rank-badge');
+        const expEl = document.getElementById('meta-exp-label');
+        const fillEl = document.getElementById('meta-exp-fill');
+        const trBtn = document.getElementById('btn-trophy-drawer');
+        const misBtn = document.getElementById('btn-next-mission');
+
+        const unlockedCount = Object.keys(this.state.trophies).length;
+        if (badgeEl) badgeEl.textContent = `Lv.${rk.lv} ${rk.title}`;
+        if (expEl) expEl.textContent = `${this.state.exp} EXP`;
+        if (fillEl) {
+          const prevMin = rk.minExp;
+          const span = Math.max(1, rk.nextMinExp - prevMin);
+          const pct = Math.max(6, Math.min(100, Math.round(((this.state.exp - prevMin) / span) * 100)));
+          fillEl.style.width = `${pct}%`;
+        }
+        if (trBtn) trBtn.textContent = `🏆 実績図鑑 (${unlockedCount}/${TROPHY_DEFS.length})`;
+
+        const nextM = this.getNextMission();
+        if (misBtn) {
+          if (nextM) {
+            misBtn.textContent = `🎯 次のミッション：${nextM.desc}（+${nextM.exp}EXP・クリックで移動）`;
+            misBtn.onclick = () => this.jumpToMission(nextM.tab);
+          } else {
+            misBtn.textContent = `👑 全${TROPHY_DEFS.length}実績コンプリート達成！ 最高企業価値記録: ${formatManYen(this.state.ceoBestValMan)}`;
+            misBtn.onclick = () => this.toggleDrawer();
+          }
+        }
+
+        const grid = document.getElementById('trophy-drawer-grid');
+        if (grid) {
+          grid.innerHTML = TROPHY_DEFS.map(t => {
+            const done = !!this.state.trophies[t.id];
+            return `
+              <div onclick="MetaGame.jumpToMission('${t.tab}')" class="col-3 stack-sm" style="padding: 10px 12px; cursor: pointer; background: var(--color-bg); border: 1px solid ${done ? 'var(--color-accent)' : 'var(--color-border)'}; opacity: ${done ? '1' : '0.72'};">
+                <div class="flex-between">
+                  <strong style="font-size: 13px; color: ${done ? 'var(--color-accent)' : 'var(--color-text)'};">${t.icon} ${t.title}</strong>
+                  <span class="caption-label tabular">${done ? '達成済' : '+' + t.exp + 'EXP'}</span>
+                </div>
+                <p class="meta-text" style="font-size: 12px;">${t.desc}</p>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+    };
+
+    // =========================================================================
+    // 5-YEAR REALISTIC CEO TURN-BASED MANAGEMENT CARD GAME (TAB 02)
+    // =========================================================================
+    const CEO_EVENTS = [
+      { id: 'cost_surge', icon: '📉', name: '仕入・外注費15%高騰ショック', desc: '原材料と外注単価が急騰！そのまま放置すると粗利率が6pt悪化する。', gmShock: -6, custMult: 1.0, fixedMult: 1.04 },
+      { id: 'rival_attack', icon: '🦈', name: '大手ライバルが広告費3倍で参入！', desc: '資本力のある競合が類似サービスを開始。何もしないと月間客数が18%流出！', gmShock: -2, custMult: 0.82, fixedMult: 1.0 },
+      { id: 'ai_breakthrough', icon: '🤖', name: '次世代AIエージェント実用化ボーナス', desc: '2〜8の定型業務を自動化する絶好機！今期のAI設備投資はコスト削減効果が1.4倍！', gmShock: +2, custMult: 1.05, fixedMult: 0.96, aiBonus: 1.4 },
+      { id: 'subsidy_chance', icon: '💴', name: '省力化・高付加価値化補助金（最大600万）公募', desc: '国・自治体の大型補助金枠がスタート。堅実投資でキャッシュを温存しながら設備強化できる年。', gmShock: 0, custMult: 1.02, fixedMult: 1.0, subsidyMan: 450 },
+      { id: 'viral_boom', icon: '🔥', name: 'SNS・口コミで指名予約が急増！', desc: '本物志向の顧客から注目が集まり需要+25%！ただし現場キャパを超えると満足度が低下。', gmShock: +1, custMult: 1.24, fixedMult: 1.06 },
+      { id: 'rate_hike', icon: '🏦', name: '金利上昇＆景気減速の逆風', desc: '財布の紐が固くなり、借入金利負担も増加。手元キャッシュ（ランウェイ）の厚みが試される！', gmShock: -3, custMult: 0.90, fixedMult: 1.02 },
+      { id: 'labor_shortage', icon: '👷', name: '深刻な人手不足・採用難が発生', desc: '時給・採用費が高騰し固定費+12%圧力。AI自動化か高単価シフトで生産性を上げる必要あり！', gmShock: -1, custMult: 0.96, fixedMult: 1.12 },
+      { id: 'inbound_vip', icon: '🌏', name: '海外・富裕層プレミアム需要ブーム！', desc: '高単価パッケージや特別体験への引き合いが急増！値上げ・高付加価値化が大成功しやすい好機！', gmShock: +3, custMult: 1.14, fixedMult: 1.02, priceBonus: 1.25 }
+    ];
+
+    const CeoTurnGame = {
+      state: null,
+      initFromInputs(playSfx = false) {
+        const unitPrice = Math.max(0.1, parseFloat(document.getElementById('cb-unit-price')?.value) || 14.0);
+        const monthlyCust = Math.max(1, parseFloat(document.getElementById('cb-monthly-cust')?.value) || 25);
+        const gmPct = Math.min(95, Math.max(10, parseFloat(document.getElementById('cb-gm')?.value) || 72));
+        const fixedMonthly = Math.max(5, parseFloat(document.getElementById('cb-fixed')?.value) || 140);
+        const initCash = Math.max(50, parseFloat(document.getElementById('cb-cash')?.value) || 600);
+        const capexMan = Math.max(0, parseFloat(document.getElementById('cb-capex-man')?.value) || 450);
+        const loanMan = Math.max(0, parseFloat(document.getElementById('cb-loan-man')?.value) || 500);
+        const loanRate = Math.max(0, parseFloat(document.getElementById('cb-loan-rate')?.value) || 1.8);
+
+        const startCash = Math.max(80, Math.round(initCash + loanMan - capexMan * 0.7));
+        const bizName = document.getElementById('cb-name')?.value || '自社ビジネス';
+
+        this.state = {
+          bizName,
+          year: 1,
+          maxYears: 5,
+          status: 'playing', // 'playing' | 'clear' | 'bankrupt'
+          unitPrice,
+          monthlyCust,
+          gmPct,
+          fixedMonthly,
+          cashMan: startCash,
+          debtMan: loanMan,
+          loanRate,
+          trust: 75,
+          aiLevel: 1,
+          lastLog: `🏁 【創業スタート】手元資金 ${formatManYen(startCash)}・月商 ${formatManYen(unitPrice * monthlyCust)} で5カ年経営チャレンジ開始！`,
+          history: [],
+          currentEvent: null,
+          cards: []
+        };
+        this.rollNextTurnEvent();
+        if (playSfx) GameSfx.play('build');
+        this.renderUI();
+      },
+      rollNextTurnEvent() {
+        const idx = Math.floor(Math.random() * CEO_EVENTS.length);
+        const ev = CEO_EVENTS[idx];
+        this.state.currentEvent = ev;
+        const s = this.state;
+        const aiB = ev.aiBonus || 1.0;
+        const prB = ev.priceBonus || 1.0;
+        const subMan = ev.subsidyMan || 0;
+        const investCost = Math.max(120, Math.round(s.fixedMonthly * 1.8));
+        const mnaCost = Math.max(180, Math.round(s.fixedMonthly * 2.4));
+
+        this.state.cards = [
+          {
+            tag: '⚡ 攻めの投資・高付加価値化',
+            title: s.aiLevel < 3 ? `AI・省力化投資 (-${investCost}万)` : `プレミアム単価改定＆ブランド投資 (-${Math.round(investCost * 0.7)}万)`,
+            desc: s.aiLevel < 3
+              ? `初期費用 ¥${investCost}万を投じ、毎月固定費を${Math.round(18 * aiB)}%恒久削減＆粗利率+${Math.round(4 * aiB)}pt！`
+              : `高付加価値化で客単価+${Math.round(20 * prB)}%・粗利率+4pt（客数-5%でも利益急増）！`,
+            apply: (st) => {
+              if (st.aiLevel < 3) {
+                st.cashMan -= investCost;
+                st.fixedMonthly = Math.max(10, st.fixedMonthly * (1 - 0.18 * aiB));
+                st.gmPct = Math.min(94, st.gmPct + 4 * aiB);
+                st.aiLevel++;
+                st.trust = Math.min(100, st.trust + 4);
+                return `🤖 AI・省力化システム稼働！固定費が大幅圧縮されAI Lv.${st.aiLevel}に上昇！`;
+              } else {
+                const c = Math.round(investCost * 0.7);
+                st.cashMan -= c;
+                st.unitPrice = Number((st.unitPrice * (1 + 0.20 * prB)).toFixed(2));
+                st.monthlyCust = Math.max(1, Math.round(st.monthlyCust * 0.95));
+                st.gmPct = Math.min(95, st.gmPct + 4);
+                st.trust = Math.min(100, st.trust + 6);
+                return `👑 高付加価値・値上げ戦略が浸透！客単価 ¥${st.unitPrice}万へ上昇！`;
+              }
+            }
+          },
+          {
+            tag: '🤝 堅実成長・ファン化＆補助金',
+            title: subMan > 0 ? `補助金活用DX＆既存客リピート強化 (+${subMan}万補助)` : `既存客LTV・紹介強化（追加投資ゼロ）`,
+            desc: subMan > 0
+              ? `補助金 +¥${subMan}万を獲得しつつ、固定費-8%・月間客数+12%・満足度+8！`
+              : `広告費を増やさず口コミ紹介と継続率を改善！月間客数+16%・粗利率+2pt・満足度+10！`,
+            apply: (st) => {
+              if (subMan > 0) {
+                st.cashMan += subMan * 0.6;
+                st.fixedMonthly = Math.max(10, st.fixedMonthly * 0.92);
+                st.monthlyCust = Math.max(1, Math.round(st.monthlyCust * 1.12));
+                st.trust = Math.min(100, st.trust + 8);
+                return `💴 補助金採択＆現場改善に成功！客数と利益率が同時に向上！`;
+              }
+              st.monthlyCust = Math.max(1, Math.round(st.monthlyCust * 1.16));
+              st.gmPct = Math.min(94, st.gmPct + 2);
+              st.trust = Math.min(100, st.trust + 10);
+              return `🤝 顧客満足度と紹介リピートが拡大！月間客数が ${st.monthlyCust}件へ成長！`;
+            }
+          },
+          {
+            tag: s.cashMan < s.fixedMonthly * 5 ? '🛡️ 緊急資金防衛・融資調達' : '🏆 逆張りM&A・シェア拡大',
+            title: s.cashMan < s.fixedMonthly * 5 ? `運転資金500万借入＆固定費22%緊急カット` : `撤退ライバルの顧客基盤を買収 (-${mnaCost}万)`,
+            desc: s.cashMan < s.fixedMonthly * 5
+              ? `手元現金 +¥500万を確保し、不採算コストを22%削減して倒産リスクを回避！（満足度-5）`
+              : `手元資金 ¥${mnaCost}万で競合の優良顧客を引き継ぎ、月間客数を一気に +38%拡大！`,
+            apply: (st) => {
+              if (st.cashMan < st.fixedMonthly * 5) {
+                st.cashMan += 500;
+                st.debtMan += 500;
+                st.fixedMonthly = Math.max(10, st.fixedMonthly * 0.78);
+                st.trust = Math.max(20, st.trust - 5);
+                return `🛡️ 運転資金500万円を調達し固定費22%を削減！資金ショート危機を脱出！`;
+              } else {
+                st.cashMan -= mnaCost;
+                st.monthlyCust = Math.max(1, Math.round(st.monthlyCust * 1.38));
+                st.trust = Math.min(100, st.trust + 3);
+                return `🏆 逆張りM&A成功！月間客数が一気に ${st.monthlyCust}件へ急拡大！`;
+              }
+            }
+          }
+        ];
+      },
+      chooseCard(cardIdx, btnEl = null) {
+        const s = this.state;
+        if (!s || s.status !== 'playing') return;
+        const card = s.cards[cardIdx];
+        if (!card) return;
+
+        const ev = s.currentEvent;
+        // 1. Apply event shock softly mitigated by trust & AI level
+        const aiShield = 1 - Math.min(0.45, s.aiLevel * 0.1);
+        s.gmPct = Math.max(12, Math.min(95, s.gmPct + (ev.gmShock < 0 ? ev.gmShock * aiShield : ev.gmShock)));
+        s.monthlyCust = Math.max(1, Math.round(s.monthlyCust * (ev.custMult < 1 ? (1 - (1 - ev.custMult) * aiShield) : ev.custMult)));
+        s.fixedMonthly = Math.max(8, s.fixedMonthly * (ev.fixedMult > 1 ? (1 + (ev.fixedMult - 1) * aiShield) : ev.fixedMult));
+
+        // 2. Apply chosen card effect
+        const actionMsg = card.apply(s);
+
+        // 3. Annual Settlement (売上・営業利益・金利・税金・借入返済・キャッシュ増減)
+        const annualRev = s.unitPrice * s.monthlyCust * 12;
+        const annualGp = annualRev * (s.gmPct / 100.0);
+        const annualFixed = s.fixedMonthly * 12;
+        const opProfit = annualGp - annualFixed;
+        const interest = s.debtMan * (s.loanRate / 100.0);
+        const preTax = opProfit - interest;
+        const tax = preTax > 0 ? preTax * 0.30 : 0;
+        const principalPay = s.debtMan > 0 ? Math.min(s.debtMan, Math.round(s.debtMan / 6)) : 0;
+        s.debtMan = Math.max(0, s.debtMan - principalPay);
+        const freeCf = preTax - tax - principalPay;
+        s.cashMan = Math.round(s.cashMan + freeCf);
+
+        const valuationMan = this.computeValuation(s, opProfit);
+        s.history.push({
+          year: s.year,
+          event: ev.name,
+          choice: card.title,
+          rev: Math.round(annualRev),
+          opProfit: Math.round(opProfit),
+          freeCf: Math.round(freeCf),
+          cashMan: s.cashMan,
+          valuationMan
+        });
+
+        MetaGame.unlock('ceo_first_turn', false);
+        MetaGame.addExp(25, `${s.year}年目決算`);
+
+        if (s.cashMan < 0) {
+          s.status = 'bankrupt';
+          s.lastLog = `💥 【${s.year}年目 資金ショート（倒産）】${actionMsg} ➔ 年間フリーCF ${formatManYen(freeCf)} により手元資金が ${formatManYen(s.cashMan)} に転落。教訓：投資額と固定費に対し運転資金バッファが不足しました。`;
+          GameSfx.play('alert');
+          GameSfx.popText('💥 資金ショート！', false, btnEl);
+        } else if (s.year >= s.maxYears) {
+          s.status = 'clear';
+          if (valuationMan > MetaGame.state.ceoBestValMan) {
+            MetaGame.state.ceoBestValMan = valuationMan;
+            MetaGame.save();
+          }
+          MetaGame.unlock('ceo_clear', false);
+          if (valuationMan >= 30000) MetaGame.unlock('ceo_unicorn', false);
+          const rank = valuationMan >= 50000 ? 'SSS (伝説のユニコーン社長)' : valuationMan >= 30000 ? 'S (名経営者)' : valuationMan >= 12000 ? 'A (優良黒字社長)' : 'B (堅実サバイバー)';
+          s.lastLog = `🎊 【5カ年完走クリア！ 総合評価：${rank}】推定企業価値 ${formatManYen(valuationMan)} ／ 期末現預金 ${formatManYen(s.cashMan)} ／ 年間営業利益 ${formatManYen(opProfit)}！`;
+          GameSfx.play('fanfare');
+          GameSfx.popText(`🎊 完走！企業価値 ${formatManYen(valuationMan)}`, true, btnEl);
+        } else {
+          s.year++;
+          s.lastLog = `✅ 【${s.year - 1}年目決算】${actionMsg} ➔ 営業利益 ${formatManYen(opProfit)} / フリーCF ${freeCf >= 0 ? '+' : ''}${formatManYen(freeCf)} / 期末現金 ${formatManYen(s.cashMan)}`;
+          GameSfx.play(freeCf >= 0 ? 'coin' : 'alert');
+          GameSfx.popText(`${freeCf >= 0 ? '+' : ''}${formatManYen(freeCf)}`, freeCf >= 0, btnEl);
+          this.rollNextTurnEvent();
+        }
+        this.renderUI();
+      },
+      computeValuation(s, opProfitOverride = null) {
+        const op = opProfitOverride !== null
+          ? opProfitOverride
+          : (s.unitPrice * s.monthlyCust * 12 * (s.gmPct / 100.0) - s.fixedMonthly * 12);
+        const mult = 4.5 + s.aiLevel * 0.6 + (s.trust >= 80 ? 1.0 : 0);
+        const netCash = s.cashMan - s.debtMan;
+        return Math.max(0, Math.round(Math.max(0, op) * mult + netCash));
+      },
+      syncToMainSimulator() {
+        const s = this.state;
+        if (!s) return;
+        const setV = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+        setV('cb-unit-price', Number(s.unitPrice.toFixed(2)));
+        setV('cb-monthly-cust', Math.round(s.monthlyCust));
+        setV('cb-rev', Math.max(10, Math.round(s.unitPrice * s.monthlyCust)));
+        setV('cb-gm', Math.round(s.gmPct));
+        setV('cb-fixed', Math.max(5, Math.round(s.fixedMonthly)));
+        setV('cb-cash', Math.max(0, Math.round(s.cashMan)));
+        GameSfx.play('fanfare');
+        GameSfx.popText('📈 50年予測＆PL表へ反映完了！', true, document.getElementById('btn-ceo-sync'));
+        runCustomBizSim();
+      },
+      renderUI() {
+        const s = this.state;
+        if (!s) return;
+        const annualRev = Math.round(s.unitPrice * s.monthlyCust * 12);
+        const opProfit = Math.round(annualRev * (s.gmPct / 100.0) - s.fixedMonthly * 12);
+        const valMan = this.computeValuation(s, opProfit);
+
+        const kpiEl = document.getElementById('ceo-game-kpis');
+        if (kpiEl) {
+          kpiEl.innerHTML = `
+            <div class="metric-cell">
+              <span class="caption-label">現在ターン / 進行状況</span>
+              <div class="metric-value tabular">${s.status === 'playing' ? `${s.year} / 5年目` : (s.status === 'clear' ? '5カ年完走！' : 'GAME OVER')}</div>
+              <div class="meta-text tabular">AI自動化 Lv.${s.aiLevel} / 顧客・社員信頼: ${s.trust}</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">手元現預金 (0未満で倒産)</span>
+              <div class="metric-value tabular ${s.cashMan < s.fixedMonthly * 3 ? 'accent-text' : ''}">${formatManYen(s.cashMan)}</div>
+              <div class="meta-text tabular">借入残高: ${formatManYen(s.debtMan)} (月固定費 ¥${Math.round(s.fixedMonthly)}万)</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">現在の年商 / 営業利益ペース</span>
+              <div class="metric-value tabular">${formatManYen(annualRev)}</div>
+              <div class="meta-text tabular">営業利益: <strong class="${opProfit >= 0 ? 'accent-text' : ''}">${formatManYen(opProfit)}</strong> (粗利率 ${Math.round(s.gmPct)}%)</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">🏆 推定企業価値 (株価換算)</span>
+              <div class="metric-value tabular accent-text">${formatManYen(valMan)}</div>
+              <div class="meta-text tabular">目標: ¥3.00億突破で実績解放！</div>
+            </div>
+          `;
+        }
+
+        const logEl = document.getElementById('ceo-game-log');
+        if (logEl) logEl.textContent = s.lastLog;
+
+        const evBox = document.getElementById('ceo-event-box');
+        const cardsBox = document.getElementById('ceo-cards-grid');
+        if (s.status === 'playing' && s.currentEvent) {
+          const ev = s.currentEvent;
+          if (evBox) {
+            evBox.innerHTML = `
+              <div class="flex-between">
+                <strong style="font-size: 15px; color: var(--color-accent);">${ev.icon} 【${s.year}年目の経営イベント】${ev.name}</strong>
+                <span class="caption-label tabular">202${5 + s.year}年度 経営判断フェーズ</span>
+              </div>
+              <p class="meta-text" style="margin-top: 4px;">${ev.desc}</p>
+            `;
+          }
+          if (cardsBox) {
+            cardsBox.innerHTML = s.cards.map((c, idx) => `
+              <button type="button" onclick="CeoTurnGame.chooseCard(${idx}, this)" class="col-4 stack-sm ceo-decision-card">
+                <span class="caption-label accent-text">${c.tag}</span>
+                <strong style="font-size: 14px; color: var(--color-text); text-align: left;">${c.title}</strong>
+                <span class="meta-text" style="text-align: left; font-size: 12.5px; line-height: 1.45;">${c.desc}</span>
+              </button>
+            `).join('');
+          }
+        } else {
+          if (evBox) {
+            evBox.innerHTML = `
+              <div class="flex-between">
+                <strong style="font-size: 15px; color: var(--color-accent);">${s.status === 'clear' ? '👑 5カ年経営チャレンジ完走！' : '💥 資金ショート発生（再挑戦しよう！）'}</strong>
+                <div class="btn-row">
+                  <button type="button" id="btn-ceo-sync" onclick="CeoTurnGame.syncToMainSimulator()" class="btn btn-primary" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">📈 この5年目実績を下の50年予測・PL表へ反映</button>
+                  <button type="button" onclick="CeoTurnGame.initFromInputs(true)" class="btn" style="min-height: 32px; padding: 4px 12px; font-size: 12px;">🔄 1年目からもう一度挑戦</button>
+                </div>
+              </div>
+            `;
+          }
+          if (cardsBox) {
+            cardsBox.innerHTML = s.history.map(h => `
+              <div class="col-4 stack-sm" style="padding: 10px 12px; background: var(--color-bg); border: 1px solid var(--color-border);">
+                <div class="flex-between">
+                  <strong>${h.year}年目決算</strong>
+                  <span class="caption-label tabular accent-text">企業価値 ${formatManYen(h.valuationMan)}</span>
+                </div>
+                <div class="meta-text" style="font-size: 12px;">${h.event} ➔ ${h.choice}</div>
+                <div class="meta-text tabular" style="font-size: 12px;">営業利益 ${formatManYen(h.opProfit)} / 現金 ${formatManYen(h.cashMan)}</div>
+              </div>
+            `).join('');
+          }
+        }
+      },
+      renderCanvas() {
+        const c = document.getElementById('ceoGameCanvas');
+        if (!c || !this.state) return;
+        const ctx = c.getContext('2d');
+        const w = c.width, h = c.height;
+        const s = this.state;
+
+        ctx.fillStyle = s.status === 'bankrupt' ? '#241016' : '#0b1829';
+        ctx.fillRect(0, 0, w, h);
+
+        // Floor
+        const gy = h - 34;
+        ctx.fillStyle = '#162942';
+        ctx.fillRect(0, gy, w, 34);
+
+        // 1) Left: Cash Vault Gold Bars
+        const bars = Math.max(0, Math.min(12, Math.ceil(s.cashMan / 250)));
+        ctx.fillStyle = '#f5d58a';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(`🏦 金庫キャッシュ: ${formatManYen(s.cashMan)}`, 18, 26);
+        for (let b = 0; b < bars; b++) {
+          const col = b % 3;
+          const row = Math.floor(b / 3);
+          ctx.fillStyle = '#ffd166';
+          ctx.fillRect(28 + col * 42, gy - 16 - row * 16, 36, 12);
+        }
+        if (s.cashMan < s.fixedMonthly * 3 && s.status === 'playing') {
+          ctx.fillStyle = '#ff6b6b';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('⚠️ 資金残りわずか！', 24, 52);
+        }
+
+        // 2) Center: Company Tower & AI Bots
+        const lvH = Math.min(104, 48 + s.aiLevel * 14);
+        const cx = 365;
+        ctx.fillStyle = '#264b73';
+        ctx.fillRect(cx - 56, gy - lvH, 112, lvH);
+        ctx.strokeStyle = '#56cfe1';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(cx - 56, gy - lvH, 112, lvH);
+        ctx.fillStyle = '#ffe599';
+        for (let r = 0; r < Math.min(4, s.aiLevel + 1); r++) {
+          for (let k = 0; k < 3; k++) {
+            ctx.fillRect(cx - 40 + k * 30, gy - lvH + 12 + r * 20, 18, 10);
+          }
+        }
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(`🏢 自社本部 (AI Lv.${s.aiLevel})`, cx - 60, gy - lvH - 10);
+
+        // Orbiting AI drones
+        for (let d = 0; d < s.aiLevel; d++) {
+          const dx = cx + Math.cos(app.tick * 0.08 + d * 1.6) * 76;
+          const dy = gy - lvH / 2 + Math.sin(app.tick * 0.1 + d) * 20;
+          ctx.fillStyle = '#4ef2d2';
+          ctx.beginPath(); ctx.arc(dx, dy, 5, 0, Math.PI * 2); ctx.fill();
+        }
+
+        // 3) Flowing Customer Avatars into HQ
+        const custDots = Math.max(2, Math.min(10, Math.round(s.monthlyCust / 12)));
+        for (let i = 0; i < custDots; i++) {
+          const p = ((app.tick * 2.0 + i * 28) % 150) / 150;
+          const px = 175 + p * 125;
+          const py = gy - 12 - Math.abs(Math.sin(app.tick * 0.16 + i)) * 6;
+          ctx.fillStyle = '#90e0ef';
+          ctx.beginPath(); ctx.arc(px, py, 5.5, 0, Math.PI * 2); ctx.fill();
+        }
+
+        // 4) Right: Enterprise Valuation Trophy Meter
+        const valMan = this.computeValuation(s);
+        ctx.fillStyle = '#f5d58a';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(`💎 推定企業価値: ${formatManYen(valMan)}`, w - 18, 26);
+        ctx.fillStyle = '#a8f0e2';
+        ctx.font = '12px monospace';
+        ctx.fillText(`客単価¥${s.unitPrice}万 × 月${s.monthlyCust}件 ｜ 信頼度 ${s.trust}/100`, w - 18, h - 11);
+        ctx.textAlign = 'left';
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '12px sans-serif';
+        ctx.fillText(`ターン ${s.year}/5年目`, 18, h - 11);
+      }
+    };
+
+
+    // =========================================================================
+    // MULTI-ENGINE × GITHUB OSS QUANTITATIVE RISK, BLACK SWAN & AI REGIME SIMULATOR
+    // Incorporates:
+    //  - Universal Business Evaluator Universal Business Evaluator (5 Revenue Engines, CCC Lag, 6-Axis Radar, Goal Seek, 6-Expert Devil's Advocate)
+    //  - Riskfolio-Lib / QuantStats methodology: 95% VaR, 95% CVaR (Expected Shortfall), Risk of Ruin, Max Drawdown
+    //  - QuantLib / Merton Jump-Diffusion: Poisson jump shocks + Correlated Crisis Tail Stress
+    //  - LSMC Real Options: Stop-Loss Abandonment Option + Staged Expansion Option via CRN (Common Random Numbers)
+    //  - Kelly-ML-Portfolio: Fractional (Half-Kelly) Optimal Capital Sizing
+    //  - BPTK_Py / PySD / SALib: 4-State Markov AI Regime-Switching (ARPU Decay, AI Churn, Self AI Leverage) & Tornado OAT Sensitivity
+    // =========================================================================
+
+    const RevoBaseFields = [
+      { key: 'leads', label: '月初の見込み流入数', group: '需要', default: 110, min: 5, max: 5000, step: 5, unit: '件' },
+      { key: 'growth', label: '流入の月次成長率', group: '需要', default: 5, min: -20, max: 30, step: 1, unit: '%' },
+      { key: 'qualified', label: '有効商談・見積化率', group: '需要', default: 70, min: 5, max: 100, step: 1, unit: '%' },
+      { key: 'conversion', label: '商談からの成約率', group: '需要', default: 45, min: 2, max: 100, step: 1, unit: '%' },
+      { key: 'eligible', label: '課金対象比率 (中抜き防止)', group: '需要', default: 88, min: 10, max: 100, step: 1, unit: '%' },
+      { key: 'priceFactor', label: '提供単価倍率 (プライシング)', group: '単価・費用', default: 100, min: 40, max: 250, step: 5, unit: '%' },
+      { key: 'fixedCostMan', label: '月額固定費 (人件費・家賃・SaaS)', group: '単価・費用', default: 110, min: 5, max: 1500, step: 5, unit: '万円' },
+      { key: 'leadCost', label: '1リード獲得実費 (CPL)', group: '単価・費用', default: 1200, min: 0, max: 50000, step: 100, unit: '円' },
+      { key: 'rework', label: '月次解約・離脱・手戻り率', group: '能力・品質', default: 5, min: 0, max: 50, step: 0.5, unit: '%' },
+      { key: 'opsHours', label: '月間フロント・商談対応枠', group: '能力・品質', default: 150, min: 10, max: 1000, step: 10, unit: '時間' },
+      { key: 'contractorDays', label: '月間現場提供・供給キャパ枠', group: '能力・品質', default: 130, min: 5, max: 1000, step: 5, unit: '人日' },
+      { key: 'cccMonths', label: '売掛回収サイト (完工〜入金CCC)', group: '資金・CCC', default: 2, min: 0, max: 8, step: 1, unit: 'ヶ月' },
+      { key: 'initialCashMan', label: '開始時の手元事業資金', group: '資金・CCC', default: 900, min: 50, max: 10000, step: 50, unit: '万円' },
+      { key: 'setupCostMan', label: '初期立上げ・開発投資額', group: '資金・CCC', default: 180, min: 0, max: 5000, step: 20, unit: '万円' },
+      { key: 'debtPayMan', label: '毎月の借入元本返済額', group: '資金・CCC', default: 15, min: 0, max: 300, step: 5, unit: '万円' }
+    ];
+
+    const RevoModels = {
+      revo_v3: {
+        id: 'revo_v3',
+        name: '🏗️ 住環境メンテ・施工×定額会員PF (3層ハイブリッド収益型)',
+        engineType: 'marketplace',
+        businessType: '住環境修理・原状回復PF ＋ オーナー会員ストック',
+        feeRate: 0.34,
+        products: [
+          { name: '設備小口修理 (水回り・空調・鍵)', price: 54000, days: 0.35, cost: 3500, share: 0.50 },
+          { name: '退去時・原状回復パッケージ工事', price: 175000, days: 1.6, cost: 11000, share: 0.38 },
+          { name: 'バリューアップ改修・断熱リノベ', price: 540000, days: 4.0, cost: 32000, share: 0.12 }
+        ],
+        streams: [
+          { id: 'st_owner_mem', name: 'オーナー定額保守メンバーシップ', type: 'monthly_fixed', unitRevenue: 420000, unitCost: 25000, activeMonth: 3 },
+          { id: 'st_owner_ltv', name: '継続オーナー保守・保証オプション', type: 'per_job', unitRevenue: 9500, unitCost: 1000, activeMonth: 2 },
+          { id: 'st_escrow_pf', name: '相見積・品質保証システム利用料', type: 'gmv_percent', unitRevenue: 3.5, unitCost: 0.5, activeMonth: 1 }
+        ],
+        params: {
+          leads: 110, growth: 6, qualified: 76, conversion: 50, eligible: 90,
+          priceFactor: 100, fixedCostMan: 69, leadCost: 700, rework: 4.5,
+          opsHours: 150, contractorDays: 130, cccMonths: 2,
+          initialCashMan: 1000, setupCostMan: 150, debtPayMan: 14,
+          intakeMinutes: 8, quoteMinutes: 18, jobMinutes: 35, quoteCost: 400, reworkCost: 5000, referral: 5, paymentRate: 1.5, recovery: 98
+        }
+      },
+      saas: {
+        id: 'saas',
+        name: '💻 B2B SaaS・バーティカルAIクラウド (MRR積み上げストック型)',
+        engineType: 'subscription',
+        businessType: 'B2B SaaS / サブスクリプション',
+        feeRate: 1.0,
+        products: [
+          { name: 'Starterプラン (月額MRR)', price: 19800, days: 0.15, cost: 1800, share: 0.50 },
+          { name: 'Proプラン (月額MRR)', price: 49800, days: 0.35, cost: 4500, share: 0.35 },
+          { name: 'Enterpriseプラン (月額MRR)', price: 150000, days: 0.90, cost: 14000, share: 0.15 }
+        ],
+        streams: [
+          { id: 'st_onboard', name: '初期導入・データ移行オンボーディング費', type: 'per_job', unitRevenue: 30000, unitCost: 5000, activeMonth: 1 }
+        ],
+        params: {
+          leads: 120, growth: 8, qualified: 45, conversion: 30, eligible: 100,
+          priceFactor: 100, fixedCostMan: 150, leadCost: 3000, rework: 3.0,
+          opsHours: 160, contractorDays: 85, cccMonths: 0,
+          initialCashMan: 1200, setupCostMan: 220, debtPayMan: 0,
+          intakeMinutes: 10, quoteMinutes: 25, jobMinutes: 35, quoteCost: 1000, reworkCost: 3000, referral: 5, paymentRate: 3.2, recovery: 99
+        }
+      },
+      ai_bpo: {
+        id: 'ai_bpo',
+        name: '🤖 AIエージェントBPO・自律業務代行 (AIレバレッジ×月額顧問型)',
+        engineType: 'subscription',
+        businessType: 'AIネイティブBPO / 自律バックオフィス代行',
+        feeRate: 1.0,
+        products: [
+          { name: 'AI経理・請求自動化ライト (月額)', price: 39800, days: 0.12, cost: 3200, share: 0.45 },
+          { name: 'AI営業・CS自律運用パック (月額)', price: 98000, days: 0.30, cost: 8500, share: 0.40 },
+          { name: '専任AIクローン＋業務設計顧問 (月額)', price: 240000, days: 0.75, cost: 22000, share: 0.15 }
+        ],
+        streams: [
+          { id: 'st_ai_setup', name: '業務フロー構築・初期AI設計費', type: 'per_job', unitRevenue: 98000, unitCost: 18000, activeMonth: 1 }
+        ],
+        params: {
+          leads: 85, growth: 9, qualified: 55, conversion: 34, eligible: 100,
+          priceFactor: 100, fixedCostMan: 110, leadCost: 2400, rework: 2.5,
+          opsHours: 150, contractorDays: 95, cccMonths: 1,
+          initialCashMan: 900, setupCostMan: 120, debtPayMan: 0,
+          intakeMinutes: 8, quoteMinutes: 20, jobMinutes: 25, quoteCost: 500, reworkCost: 4000, referral: 8, paymentRate: 3.0, recovery: 99
+        }
+      },
+      ec: {
+        id: 'ec',
+        name: '🛒 EC・D2C・越境リピート物販ブランド (新規＋定期コホート型)',
+        engineType: 'repeat_ec',
+        businessType: 'D2C / E-Commerce',
+        feeRate: 1.0,
+        products: [
+          { name: '初回トライアル単品', price: 4500, days: 0.02, cost: 1400, share: 0.45 },
+          { name: '主力スタンダード定期便', price: 9800, days: 0.04, cost: 3100, share: 0.40 },
+          { name: 'プレミアムまとめ買いセット', price: 24000, days: 0.08, cost: 7200, share: 0.15 }
+        ],
+        streams: [
+          { id: 'st_vip_club', name: 'VIP定期メンバーシップ会費', type: 'monthly_fixed', unitRevenue: 200000, unitCost: 30000, activeMonth: 2 }
+        ],
+        params: {
+          leads: 2800, growth: 6, qualified: 35, conversion: 12, eligible: 100,
+          priceFactor: 100, fixedCostMan: 80, leadCost: 90, rework: 3.5,
+          opsHours: 140, contractorDays: 130, cccMonths: 1,
+          initialCashMan: 850, setupCostMan: 150, debtPayMan: 10,
+          intakeMinutes: 1, quoteMinutes: 1, jobMinutes: 4, quoteCost: 0, reworkCost: 1500, referral: 5, paymentRate: 3.6, recovery: 99
+        }
+      },
+      retail: {
+        id: 'retail',
+        name: '🏢 店舗・サロン・クリニック・飲食 (席数キャパ稼働＆常連リピート型)',
+        engineType: 'capacity',
+        businessType: '実店舗 / クリニック / サロン / 飲食',
+        feeRate: 1.0,
+        products: [
+          { name: 'スタンダード施術・基本コース', price: 8800, days: 0.08, cost: 1300, share: 0.55 },
+          { name: 'スペシャル集中ケアコース', price: 22000, days: 0.16, cost: 3000, share: 0.30 },
+          { name: 'プレミアム回数券・年間パス', price: 88000, days: 0.48, cost: 9500, share: 0.15 }
+        ],
+        streams: [
+          { id: 'st_homecare', name: '店頭ホームケア物販・D2C連動', type: 'per_job', unitRevenue: 2600, unitCost: 1000, activeMonth: 1 }
+        ],
+        params: {
+          leads: 220, growth: 4, qualified: 85, conversion: 72, eligible: 100,
+          priceFactor: 100, fixedCostMan: 120, leadCost: 1800, rework: 5.0,
+          opsHours: 180, contractorDays: 120, cccMonths: 0,
+          initialCashMan: 1000, setupCostMan: 380, debtPayMan: 15,
+          intakeMinutes: 5, quoteMinutes: 10, jobMinutes: 20, quoteCost: 0, reworkCost: 1500, referral: 3, paymentRate: 3.0, recovery: 99
+        }
+      },
+      agency: {
+        id: 'agency',
+        name: '🤝 受託開発・コンサル・士業・BtoB専門施工 (工数＆検収サイト型)',
+        engineType: 'project',
+        businessType: 'BtoB受託 / コンサル / 専門施工',
+        feeRate: 1.0,
+        products: [
+          { name: 'スポット診断・PoC設計', price: 650000, days: 3.5, cost: 90000, share: 0.45 },
+          { name: '標準システム構築・導入案件', price: 2400000, days: 12.0, cost: 420000, share: 0.40 },
+          { name: '全社DX刷新・大型パッケージ', price: 5800000, days: 26.0, cost: 1050000, share: 0.15 }
+        ],
+        streams: [
+          { id: 'st_retainer', name: '納品後の月額保守・顧問リテイナー', type: 'monthly_fixed', unitRevenue: 450000, unitCost: 60000, activeMonth: 3 }
+        ],
+        params: {
+          leads: 24, growth: 4, qualified: 65, conversion: 38, eligible: 100,
+          priceFactor: 100, fixedCostMan: 175, leadCost: 8000, rework: 9.0,
+          opsHours: 160, contractorDays: 115, cccMonths: 2,
+          initialCashMan: 1300, setupCostMan: 100, debtPayMan: 0,
+          intakeMinutes: 25, quoteMinutes: 80, jobMinutes: 110, quoteCost: 8000, reworkCost: 45000, referral: 8, paymentRate: 0, recovery: 98
+        }
+      },
+      marketplace: {
+        id: 'marketplace',
+        name: '🔄 マッチングPF・M&A仲介・人材紹介 (GMV×テイクレート手数料型)',
+        engineType: 'marketplace',
+        businessType: 'マーケットプレイス / 仲介PF',
+        feeRate: 0.16,
+        products: [
+          { name: 'ライト案件マッチング', price: 150000, days: 0.8, cost: 2500, share: 0.50 },
+          { name: 'ミドル専門人材・業務仲介', price: 550000, days: 2.2, cost: 7000, share: 0.35 },
+          { name: '大型M&A・エグゼクティブ成約', price: 2600000, days: 7.0, cost: 25000, share: 0.15 }
+        ],
+        streams: [
+          { id: 'st_saas_tool', name: '加盟企業向けSaaS・優先掲載料', type: 'monthly_fixed', unitRevenue: 280000, unitCost: 25000, activeMonth: 2 }
+        ],
+        params: {
+          leads: 140, growth: 7, qualified: 70, conversion: 44, eligible: 86,
+          priceFactor: 100, fixedCostMan: 120, leadCost: 1200, rework: 5.0,
+          opsHours: 150, contractorDays: 150, cccMonths: 2,
+          initialCashMan: 950, setupCostMan: 160, debtPayMan: 0,
+          intakeMinutes: 10, quoteMinutes: 20, jobMinutes: 35, quoteCost: 500, reworkCost: 6000, referral: 10, paymentRate: 0, recovery: 97
+        }
+      },
+      education: {
+        id: 'education',
+        name: '🎓 オンラインスクール・リスキリング講座 (認定講座＋コミュニティ型)',
+        engineType: 'subscription',
+        businessType: 'EdTech / スクール / コミュニティ',
+        feeRate: 1.0,
+        products: [
+          { name: '実践コミュニティ会員 (月額)', price: 14800, days: 0.05, cost: 900, share: 0.55 },
+          { name: 'プロ育成ブートキャンプ (月額換算)', price: 49800, days: 0.25, cost: 4500, share: 0.35 },
+          { name: '法人研修・エグゼクティブ伴走', price: 135000, days: 0.75, cost: 15000, share: 0.10 }
+        ],
+        streams: [
+          { id: 'st_cert_fee', name: '認定資格・卒業生案件紹介フィー', type: 'per_job', unitRevenue: 12000, unitCost: 1500, activeMonth: 3 }
+        ],
+        params: {
+          leads: 300, growth: 7, qualified: 42, conversion: 22, eligible: 100,
+          priceFactor: 100, fixedCostMan: 75, leadCost: 1500, rework: 4.0,
+          opsHours: 130, contractorDays: 95, cccMonths: 0,
+          initialCashMan: 650, setupCostMan: 90, debtPayMan: 0,
+          intakeMinutes: 5, quoteMinutes: 15, jobMinutes: 25, quoteCost: 0, reworkCost: 3000, referral: 10, paymentRate: 3.6, recovery: 99
+        }
+      }
+    };
+
+    const RevoBlackSwans = [
+      {
+        id: 'bs_cpa_surge',
+        icon: '📈',
+        shortTitle: 'BS1: 広告CPA 2倍＆流入30%減',
+        title: '🦢 ブラックスワン1: 広告高騰・集客アルゴリズム激変ショック',
+        desc: '大手参入やSNS/検索仕様変更により獲得単価(CPL)が2.2倍に跳ね上がり、新規流入-30%・成約率-15%が同時発生。',
+        applyStress: (p) => ({
+          ...p,
+          leads: Math.max(5, Math.round(p.leads * 0.70)),
+          leadCost: Math.min(50000, Math.round(Math.max(300, p.leadCost) * 2.2)),
+          conversion: Math.max(3, Number((p.conversion * 0.85).toFixed(1)))
+        }),
+        antifragileLabel: '提携・紹介チャネル導入＋松竹梅プライシングで単価+18%',
+        applyAntifragile: (p) => ({
+          ...p,
+          priceFactor: Math.min(240, p.priceFactor + 18),
+          leadCost: Math.round(p.leadCost * 0.68),
+          conversion: Math.min(95, p.conversion + 5)
+        })
+      },
+      {
+        id: 'bs_supply_collapse',
+        icon: '👷',
+        shortTitle: 'BS2: 人材離脱・供給枠40%崩壊',
+        title: '🦢 ブラックスワン2: キーマン離脱・現場キャパ40%半減＆品質劣化ショック',
+        desc: '中核メンバーや外注網の離脱で月間提供枠が40%減少し、手戻り・解約率が2倍に悪化して失注ドミノが発生。',
+        applyStress: (p) => ({
+          ...p,
+          contractorDays: Math.max(10, Math.round(p.contractorDays * 0.60)),
+          opsHours: Math.max(20, Math.round(p.opsHours * 0.75)),
+          rework: Math.min(48, Number((Math.max(3, p.rework) * 2.0).toFixed(1)))
+        }),
+        antifragileLabel: '標準SOP＆AIエージェント自動化で工数圧縮・供給余力+30%',
+        applyAntifragile: (p) => ({
+          ...p,
+          contractorDays: Math.min(1000, Math.round(p.contractorDays * 1.30)),
+          rework: Math.max(1.0, Number((p.rework * 0.55).toFixed(1)))
+        })
+      },
+      {
+        id: 'bs_cash_freeze',
+        icon: '🏦',
+        shortTitle: 'BS3: 入金遅延+2ヶ月＆貸倒ショック',
+        title: '🦢 ブラックスワン3: 大口取引先の支払サイト延長・売掛焦げ付き（黒字倒産危機）',
+        desc: '景気後退で検収・入金サイト(CCC)が+2ヶ月長期化し、未回収ロスで回収率が88%へ急落。帳簿上黒字でも現金が枯渇。',
+        applyStress: (p) => ({
+          ...p,
+          cccMonths: Math.min(8, p.cccMonths + 2),
+          recovery: 88
+        }),
+        antifragileLabel: '前受金・カード即時決済移行でCCCゼロ化＋運転資金+300万確保',
+        applyAntifragile: (p) => ({
+          ...p,
+          cccMonths: 0,
+          recovery: 99,
+          initialCashMan: p.initialCashMan + 300
+        })
+      },
+      {
+        id: 'bs_ai_disrupt',
+        icon: '🤖',
+        shortTitle: 'BS4: 大手AI無料代替（単価-30%）',
+        title: '🦢 ブラックスワン4: 巨大テックの無料AIエージェント参入による価格破壊',
+        desc: '従来の定型作業・仲介価値がAIで無料代替され、許容単価が-30%下落、既存客の月次解約・離脱率が+6pt急増。',
+        applyStress: (p) => ({
+          ...p,
+          priceFactor: Math.max(40, Math.round(p.priceFactor * 0.70)),
+          rework: Math.min(48, Number((p.rework + 6.0).toFixed(1))),
+          qualified: Math.max(10, Math.round(p.qualified * 0.82))
+        }),
+        antifragileLabel: 'AIでは代替不能な物理・対面信頼・保証領域へピボット（単価+20%・固定費-25%）',
+        applyAntifragile: (p) => ({
+          ...p,
+          priceFactor: Math.min(240, p.priceFactor + 20),
+          fixedCostMan: Math.max(10, Math.round(p.fixedCostMan * 0.75)),
+          rework: Math.max(1.0, Number((p.rework * 0.65).toFixed(1)))
+        })
+      },
+      {
+        id: 'bs_macro_halt',
+        icon: '🌪️',
+        shortTitle: 'BS5: 災害・パンデミック稼働半減',
+        title: '🦢 ブラックスワン5: パンデミック・災害・サプライチェーン寸断ショック',
+        desc: '物理移動制限や資材途絶により新規流入-40%・供給枠-35%・固定費だけが重くのしかかる極限サバイバル局面。',
+        applyStress: (p) => ({
+          ...p,
+          leads: Math.max(5, Math.round(p.leads * 0.60)),
+          contractorDays: Math.max(10, Math.round(p.contractorDays * 0.65)),
+          cccMonths: Math.min(8, p.cccMonths + 1)
+        }),
+        antifragileLabel: '固定費の変動費化（業務委託シフト-30%）＋オンライン収益柱の併設',
+        applyAntifragile: (p) => ({
+          ...p,
+          fixedCostMan: Math.max(10, Math.round(p.fixedCostMan * 0.70)),
+          initialCashMan: p.initialCashMan + 250
+        })
+      }
+    ];
+
+    const RevoEngine = {
+      modelId: 'revo_v3',
+      horizonMonths: 36,
+      params: null,
+      activeBlackSwans: {},
+      aiEnv: {
+        priceDecayAnnualPct: 8,   // Vector A: AI commoditization annual price pressure (%)
+        churnShockPct: 1.5,       // Vector B: AI substitution extra churn risk (%)
+        selfAiLeveragePct: 35,    // Vector C: Own AI agent adoption (ops time & fixed cost savings %)
+        jumpLambdaAnnual: 0.20,   // Merton Poisson annual Black Swan jump intensity
+        stopLossPct: 45,          // Real Options: Abandonment stop-loss threshold (% of initial cash burned)
+        enableExpansionOpt: true, // Real Options: Auto-expand capacity when demand > 85% & profitable
+        totalNetWorthMan: 2500    // Executive's total investable capital / net worth (万円) for Half-Kelly sizing
+      },
+      portfolioSlots: [null, null, null],
+      lastDet: null,
+      lastMc: null,
+
+      init() {
+        this.loadModel('revo_v3', false);
+      },
+
+      loadModel(modelId, playSound = true) {
+        const bm = RevoModels[modelId] || RevoModels.revo_v3;
+        this.modelId = bm.id;
+        this.params = { ...bm.params };
+        this.activeBlackSwans = {};
+        const sel = document.getElementById('rv-model-select');
+        if (sel && sel.value !== bm.id) sel.value = bm.id;
+        this.syncSlidersFromParams();
+        this.runAll(playSound);
+      },
+
+      setHorizon(months) {
+        this.horizonMonths = months === 12 ? 12 : 36;
+        const b12 = document.getElementById('rv-hor-12');
+        const b36 = document.getElementById('rv-hor-36');
+        if (b12) b12.className = this.horizonMonths === 12 ? 'btn btn-primary' : 'btn';
+        if (b36) b36.className = this.horizonMonths === 36 ? 'btn btn-primary' : 'btn';
+        this.runAll(true);
+      },
+
+      syncSlidersFromParams() {
+        if (!this.params) return;
+        for (const f of RevoBaseFields) {
+          const el = document.getElementById('rv-inp-' + f.key);
+          const lbl = document.getElementById('rv-lbl-' + f.key);
+          if (el && this.params[f.key] !== undefined) el.value = this.params[f.key];
+          if (lbl && this.params[f.key] !== undefined) lbl.textContent = `${this.params[f.key]}${f.unit}`;
+        }
+        const setAi = (id, lblId, val, suffix) => {
+          const el = document.getElementById(id);
+          const lb = document.getElementById(lblId);
+          if (el) el.value = val;
+          if (lb) lb.textContent = suffix(val);
+        };
+        setAi('rv-ai-decay', 'lbl-rv-ai-decay', this.aiEnv.priceDecayAnnualPct, v => `-${v}%/年`);
+        setAi('rv-ai-churn', 'lbl-rv-ai-churn', this.aiEnv.churnShockPct, v => `+${v}%/月`);
+        setAi('rv-ai-self', 'lbl-rv-ai-self', this.aiEnv.selfAiLeveragePct, v => `${v}%省力化`);
+        setAi('rv-jump-lambda', 'lbl-rv-jump-lambda', Math.round(this.aiEnv.jumpLambdaAnnual * 100), v => `年率${v}%`);
+        setAi('rv-stoploss', 'lbl-rv-stoploss', this.aiEnv.stopLossPct, v => `資金${v}%毀損で撤退`);
+        const nwEl = document.getElementById('rv-networth-man');
+        if (nwEl) nwEl.value = this.aiEnv.totalNetWorthMan;
+        const expEl = document.getElementById('rv-opt-expand');
+        if (expEl) expEl.checked = !!this.aiEnv.enableExpansionOpt;
+      },
+
+      readInputs() {
+        if (!this.params) this.params = { ...RevoModels.revo_v3.params };
+        for (const f of RevoBaseFields) {
+          const el = document.getElementById('rv-inp-' + f.key);
+          if (el) {
+            const v = parseFloat(el.value);
+            if (Number.isFinite(v)) this.params[f.key] = v;
+          }
+          const lbl = document.getElementById('rv-lbl-' + f.key);
+          if (lbl) lbl.textContent = `${this.params[f.key]}${f.unit}`;
+        }
+        const g = (id, def) => {
+          const el = document.getElementById(id);
+          return el ? (parseFloat(el.value) || 0) : def;
+        };
+        this.aiEnv.priceDecayAnnualPct = g('rv-ai-decay', 8);
+        this.aiEnv.churnShockPct = g('rv-ai-churn', 1.5);
+        this.aiEnv.selfAiLeveragePct = g('rv-ai-self', 35);
+        this.aiEnv.jumpLambdaAnnual = g('rv-jump-lambda', 20) / 100.0;
+        this.aiEnv.stopLossPct = Math.max(15, Math.min(100, g('rv-stoploss', 45)));
+        this.aiEnv.totalNetWorthMan = Math.max(100, g('rv-networth-man', 2500));
+        const expEl = document.getElementById('rv-opt-expand');
+        if (expEl) this.aiEnv.enableExpansionOpt = !!expEl.checked;
+
+        const setTxt = (id, t) => { const e = document.getElementById(id); if (e) e.textContent = t; };
+        setTxt('lbl-rv-ai-decay', `-${this.aiEnv.priceDecayAnnualPct}%/年`);
+        setTxt('lbl-rv-ai-churn', `+${this.aiEnv.churnShockPct}%/月`);
+        setTxt('lbl-rv-ai-self', `${this.aiEnv.selfAiLeveragePct}%省力化`);
+        setTxt('lbl-rv-jump-lambda', `年率${Math.round(this.aiEnv.jumpLambdaAnnual * 100)}%`);
+        setTxt('lbl-rv-stoploss', `資金${this.aiEnv.stopLossPct}%毀損で撤退`);
+      },
+
+      toggleBlackSwan(bsId) {
+        this.activeBlackSwans[bsId] = !this.activeBlackSwans[bsId];
+        if (typeof GameSfx !== 'undefined') GameSfx.play(this.activeBlackSwans[bsId] ? 'alert' : 'click');
+        this.runAll(false);
+      },
+
+      applyPatch(patchObj, label = '改善パッチ適用') {
+        if (!patchObj || !this.params) return;
+        Object.keys(patchObj).forEach(k => {
+          if (this.params[k] !== undefined) this.params[k] = patchObj[k];
+        });
+        this.activeBlackSwans = {};
+        this.syncSlidersFromParams();
+        if (typeof GameSfx !== 'undefined') {
+          GameSfx.play('build');
+          GameSfx.popText(`⚡ ${label}`, true, document.getElementById('rv-verdict-badge'));
+        }
+        this.runAll(false);
+      },
+
+      applyAntifragileFor(bsId) {
+        const bs = RevoBlackSwans.find(b => b.id === bsId);
+        if (!bs) return;
+        this.params = bs.applyAntifragile(this.params);
+        this.syncSlidersFromParams();
+        if (typeof GameSfx !== 'undefined') {
+          GameSfx.play('fanfare');
+          GameSfx.popText('🛡️ アンチフラジャイル対策を反映！', true);
+        }
+        this.runAll(false);
+      },
+
+      getEffectiveParams() {
+        let p = { ...this.params };
+        for (const bs of RevoBlackSwans) {
+          if (this.activeBlackSwans[bs.id]) {
+            p = bs.applyStress(p);
+          }
+        }
+        return p;
+      },
+
+      // Deterministic single-trajectory AI直結賃貸 evaluation (with AI self-leverage & CCC lags)
+      simulateTrajectory(rawParams, options = {}) {
+        const bm = RevoModels[this.modelId] || RevoModels.revo_v3;
+        const horizon = this.horizonMonths;
+        const engine = bm.engineType;
+        const p = rawParams;
+
+        // AI Self-Leverage reduces intake/quote/job minutes & trims fixed cost overhead
+        const aiLev = (options.selfAiLeveragePct !== undefined ? options.selfAiLeveragePct : this.aiEnv.selfAiLeveragePct) / 100.0;
+        const timeCompression = 1 - aiLev * 0.55; // up to 55% faster human handling per client
+        const fixedCompression = 1 - aiLev * 0.22; // up to 22% lean fixed overhead
+
+        const baseFixedYen = p.fixedCostMan * 10000 * fixedCompression;
+        const initialCashYen = p.initialCashMan * 10000;
+        const setupCostYen = p.setupCostMan * 10000;
+        const debtPayYen = p.debtPayMan * 10000;
+        const cccLag = Math.max(0, Math.min(8, Math.round(p.cccMonths)));
+
+        const weight = bm.products.reduce((s, x) => s + x.share, 0) || 1;
+        const basePrice = bm.products.reduce((s, x) => s + x.share * x.price, 0) / weight;
+        const avgDays = bm.products.reduce((s, x) => s + x.share * x.days, 0) / weight;
+        const avgCost = bm.products.reduce((s, x) => s + x.share * x.cost, 0) / weight;
+
+        const qualify = Math.max(0, Math.min(1, p.qualified / 100));
+        const baseConvert = Math.max(0, Math.min(1, p.conversion / 100));
+        const eligible = Math.max(0, Math.min(1, p.eligible / 100));
+        const baseRecovery = Math.max(0, Math.min(1, (p.recovery || 98) / 100));
+        const feeRate = bm.feeRate || 1.0;
+
+        const months = Array.from({ length: horizon }, (_, i) => ({
+          month: i + 1, leads: 0, accepted: 0, won: 0, served: 0, unserved: 0,
+          activeCustomers: 0, gmv: 0, fee: 0, streamRev: 0, streamCost: 0,
+          cashIn: 0, variable: 0, fixed: 0, profit: 0, cash: 0, ar: 0,
+          opsUtil: 0, supplyUtil: 0, regime: 0, abandoned: false
+        }));
+
+        let activeSubsPool = 0, repeatPool = 0;
+        let contractorCap = p.contractorDays;
+        let extraFixedExpansion = 0;
+        let currentRegime = 0; // 0: Normal, 1: Price War, 2: AI Disruption, 3: Credit Crunch
+        const rng = options.rng || null;
+        const useStochastic = !!options.stochastic;
+        const useRealOptions = !!options.realOptions;
+        const stopLossCashFloor = initialCashYen * (1 - (options.stopLossPct || this.aiEnv.stopLossPct) / 100.0);
+
+        // Markov Transition Matrix
+        const trans = [
+          [0.82, 0.09, 0.06, 0.03],
+          [0.18, 0.66, 0.11, 0.05],
+          [0.12, 0.22, 0.60, 0.06],
+          [0.20, 0.15, 0.10, 0.55]
+        ];
+
+        for (let i = 0; i < horizon; i++) {
+          const m = months[i];
+          if (useStochastic && rng) {
+            const u = rng();
+            let acc = 0;
+            for (let st = 0; st < 4; st++) {
+              acc += trans[currentRegime][st];
+              if (u <= acc) { currentRegime = st; break; }
+            }
+          }
+          m.regime = currentRegime;
+
+          // AI Environment Secular Drift + Regime Multiplier
+          const yrsElapsed = i / 12.0;
+          const aiDecayRate = (this.aiEnv.priceDecayAnnualPct / 100.0);
+          // Self AI adoption shields against commoditization by adding AI value
+          const netAiPriceDrift = Math.max(0.45, Math.pow(1 - aiDecayRate * (1 - aiLev * 0.65), yrsElapsed));
+          let regimePriceMult = 1.0, regimeChurnAdd = 0, regimeLeadMult = 1.0, regimeLagAdd = 0, regimeRecovMult = 1.0;
+
+          if (useStochastic && rng) {
+            // Continuous diffusion noise
+            regimeLeadMult *= (0.88 + rng() * 0.24);
+            if (currentRegime === 1) { // Price War
+              regimePriceMult *= 0.92;
+              regimeChurnAdd += 0.012;
+            } else if (currentRegime === 2) { // AI Disruption Wave
+              const unshielded = Math.max(0.15, 1 - aiLev * 0.8);
+              regimePriceMult *= (1 - 0.16 * unshielded);
+              regimeChurnAdd += (this.aiEnv.churnShockPct / 100.0) * (0.6 + unshielded);
+              regimeLeadMult *= (0.86 + aiLev * 0.25);
+            } else if (currentRegime === 3) { // Credit Crunch
+              regimeLeadMult *= 0.80;
+              regimeLagAdd = 1;
+              regimeRecovMult = 0.93;
+            }
+
+            // Merton Poisson Black Swan Jump Process (monthly jump prob = lambda / 12)
+            const monthlyJumpProb = (this.aiEnv.jumpLambdaAnnual || 0) / 12.0;
+            if (rng() < monthlyJumpProb) {
+              // Correlated Tail Crash (Simultaneous demand drop, churn spike, AR delay)
+              regimeLeadMult *= (0.55 + rng() * 0.15);
+              regimeChurnAdd += 0.065;
+              regimeLagAdd += 2;
+              regimeRecovMult *= 0.88;
+            }
+          } else {
+            // Deterministic baseline still reflects secular AI price & churn vectors smoothly
+            const unshielded = Math.max(0.2, 1 - aiLev * 0.75);
+            regimeChurnAdd += (this.aiEnv.churnShockPct / 100.0) * 0.35 * unshielded;
+          }
+
+          const price = basePrice * (p.priceFactor / 100.0) * netAiPriceDrift * regimePriceMult;
+          const rework = Math.max(0.005, Math.min(0.65, (p.rework / 100.0) + regimeChurnAdd));
+          const convert = Math.max(0.02, Math.min(0.98, baseConvert * (currentRegime === 3 ? 0.88 : 1.0)));
+          const recovery = Math.max(0.5, Math.min(1.0, baseRecovery * regimeRecovMult));
+
+          const reworkTimeFactor = (engine === 'subscription' || engine === 'repeat_ec' || engine === 'capacity') ? 0 : rework;
+          const minsPerLead = ((p.intakeMinutes || 8) + qualify * (p.quoteMinutes || 20) + qualify * convert * (p.jobMinutes || 35) * (1 + reworkTimeFactor)) * timeCompression;
+
+          m.leads = Math.max(0, p.leads * Math.pow(1 + p.growth / 100.0, i) * regimeLeadMult);
+          m.accepted = Math.min(m.leads, minsPerLead > 0 ? (p.opsHours * 60.0) / minsPerLead : m.leads);
+          m.won = m.accepted * qualify * convert;
+
+          let billableUnits = 0;
+          if (engine === 'subscription') {
+            const retained = activeSubsPool * Math.max(0, 1 - rework);
+            const ongoingDaysUsed = retained * avgDays * 0.25 * timeCompression;
+            const remDays = Math.max(0, contractorCap - ongoingDaysUsed);
+            const maxNew = remDays / Math.max(0.05, avgDays);
+            m.served = Math.min(m.won, maxNew);
+            m.unserved = Math.max(0, m.won - m.served);
+            activeSubsPool = retained + m.served;
+            m.activeCustomers = activeSubsPool;
+            billableUnits = activeSubsPool;
+            m.supplyUtil = contractorCap > 0 ? Math.min(1.2, (ongoingDaysUsed + m.served * avgDays) / contractorCap) : 0;
+          } else if (engine === 'repeat_ec') {
+            const repeatRate = Math.max(0.05, 0.25 * (1 - rework));
+            const potRepeat = repeatPool * repeatRate;
+            const maxOrders = contractorCap / Math.max(0.005, avgDays);
+            m.served = Math.min(m.won, maxOrders);
+            const rem = Math.max(0, maxOrders - m.served);
+            const repServed = Math.min(potRepeat, rem);
+            m.unserved = Math.max(0, (m.won + potRepeat) - (m.served + repServed));
+            repeatPool = repeatPool * Math.max(0, 0.88 - rework * 0.5) + m.served;
+            billableUnits = m.served + repServed;
+            m.activeCustomers = billableUnits;
+            m.supplyUtil = maxOrders > 0 ? billableUnits / maxOrders : 0;
+          } else if (engine === 'capacity') {
+            const effNew = m.won * Math.max(0, 1 - rework * 0.5);
+            const maxSlots = contractorCap / Math.max(0.01, avgDays);
+            const regDem = Math.min(maxSlots * 0.55, repeatPool * 0.30);
+            m.served = Math.min(effNew, Math.max(0, maxSlots - regDem));
+            const repServed = Math.min(regDem, Math.max(0, maxSlots - m.served));
+            m.unserved = Math.max(0, (effNew + regDem) - (m.served + repServed));
+            repeatPool = repeatPool * 0.85 + m.served;
+            billableUnits = m.served + repServed;
+            m.activeCustomers = billableUnits;
+            m.supplyUtil = maxSlots > 0 ? billableUnits / maxSlots : 0;
+          } else {
+            const maxCap = contractorCap / Math.max(0.05, avgDays * (1 + rework));
+            m.served = Math.min(m.won, maxCap);
+            m.unserved = Math.max(0, m.won - m.served);
+            m.activeCustomers = m.served;
+            billableUnits = m.served;
+            m.supplyUtil = maxCap > 0 ? m.served / maxCap : 0;
+          }
+          m.opsUtil = p.opsHours > 0 ? (m.accepted * minsPerLead / 60.0) / p.opsHours : 0;
+
+          const gmv = billableUnits * price;
+          const fee = gmv * eligible * feeRate * recovery;
+
+          // Secondary revenue streams
+          let sRev = 0, sCost = 0;
+          const streamJobUnits = engine === 'subscription' ? m.served : billableUnits;
+          for (const st of (bm.streams || [])) {
+            if (m.month < (st.activeMonth || 1)) continue;
+            if (st.type === 'monthly_fixed') { sRev += st.unitRevenue; sCost += st.unitCost; }
+            else if (st.type === 'per_job') { sRev += streamJobUnits * st.unitRevenue; sCost += streamJobUnits * st.unitCost; }
+            else if (st.type === 'gmv_percent') { sRev += gmv * (st.unitRevenue / 100.0); sCost += gmv * (st.unitCost / 100.0); }
+          }
+
+          m.gmv = gmv;
+          m.fee = fee;
+          m.streamRev = sRev;
+          m.streamCost = sCost;
+
+          const acqSpend = m.leads * p.leadCost + m.accepted * qualify * (p.quoteCost || 0);
+          const fulfillmentVar = billableUnits * (avgCost + rework * (p.reworkCost || 3000))
+            + fee * ((p.referral || 5) / 100.0)
+            + gmv * ((p.paymentRate || 2.5) / 100.0)
+            + sCost;
+
+          m.variable += acqSpend + fulfillmentVar;
+          m.fixed = baseFixedYen + extraFixedExpansion;
+
+          const effLag = Math.min(horizon + 4, cccLag + regimeLagAdd);
+          const collectIdx = i + effLag;
+          if (collectIdx < horizon) {
+            months[collectIdx].cashIn += (fee + sRev);
+          }
+
+          // Real Options: Expansion Option if utilization > 85% and unit margin healthy
+          if (useRealOptions && this.aiEnv.enableExpansionOpt && extraFixedExpansion === 0 && i >= 5 && m.supplyUtil > 0.85 && (fee + sRev - m.variable - m.fixed) > 0) {
+            contractorCap = Math.round(contractorCap * 1.45);
+            extraFixedExpansion = baseFixedYen * 0.22;
+          }
+        }
+
+        // Cash Flow, Working Capital AR & Real Options Stop-Loss Abandonment Pass
+        let cash = initialCashYen - setupCostYen;
+        let minCash = cash;
+        let ar = 0;
+        let abandonedMonth = null;
+        let consecutiveLoss = 0;
+
+        for (let i = 0; i < horizon; i++) {
+          const m = months[i];
+          if (abandonedMonth !== null) {
+            // Business exited cleanly via Stop-Loss Real Option (salvage liquidation, zero further operating burn)
+            m.abandoned = true;
+            m.fee = 0; m.streamRev = 0; m.variable = 0; m.fixed = 0; m.cashIn = 0;
+            m.profit = 0;
+            cash -= debtPayYen * 0.5;
+            m.cash = cash;
+            m.ar = ar;
+            minCash = Math.min(minCash, cash);
+            continue;
+          }
+
+          const totalRevM = m.fee + m.streamRev;
+          m.profit = totalRevM - m.variable - m.fixed - (i === 0 ? setupCostYen : 0);
+          cash += m.cashIn - m.variable - m.fixed - debtPayYen;
+          ar = Math.max(0, ar + totalRevM - m.cashIn);
+          m.cash = cash;
+          m.ar = ar;
+          minCash = Math.min(minCash, cash);
+
+          if (m.profit < 0) consecutiveLoss++; else consecutiveLoss = 0;
+
+          if (useRealOptions && i >= 6 && m.profit < 0 && ((cash + ar * 0.75) <= stopLossCashFloor || consecutiveLoss >= 9)) {
+            abandonedMonth = m.month;
+            // Collect 65% of remaining AR upon orderly wind-down minus 1 month severance
+            cash += ar * 0.65 - m.fixed * 0.8;
+            ar = 0;
+            m.cash = cash;
+            minCash = Math.min(minCash, cash);
+          }
+        }
+
+        // Discounted NPV (annual discount rate = 8%)
+        let npv = -setupCostYen;
+        for (let i = 0; i < horizon; i++) {
+          const m = months[i];
+          const netCf = (i === 0 ? m.profit + setupCostYen : m.profit) - debtPayYen;
+          npv += netCf / Math.pow(1 + 0.08 / 12.0, i + 1);
+        }
+
+        // Unit Economics & 6-Axis Radar
+        const totalServed = months.reduce((s, m) => s + m.served, 0);
+        const totalAcq = months.reduce((s, m) => s + m.leads * p.leadCost + m.accepted * qualify * (p.quoteCost || 0), 0);
+        const cac = totalServed > 0 ? totalAcq / totalServed : totalAcq;
+        const totalRev = months.reduce((s, m) => s + m.fee + m.streamRev, 0);
+        const totalVar = months.reduce((s, m) => s + m.variable, 0);
+        const totalProfit = months.reduce((s, m) => s + m.profit, 0);
+        const grossMarginRate = totalRev > 0 ? ((totalRev - totalVar) / totalRev) * 100 : 0;
+
+        let avgLife = 12, ltv = 0, nrr = 100;
+        const unitRev = basePrice * (p.priceFactor / 100.0) * eligible * feeRate * baseRecovery;
+        const unitGm = Math.max(0, unitRev - avgCost);
+        if (engine === 'subscription') {
+          const ch = Math.max(0.008, p.rework / 100.0);
+          avgLife = Math.min(60, 1 / ch);
+          ltv = unitGm * avgLife;
+          nrr = Math.round(Math.max(55, Math.min(145, (1 - ch + Math.max(0, p.growth) * 0.0035) * 100)));
+        } else if (engine === 'repeat_ec') {
+          const mult = Math.max(1.2, 2.9 * (1 - (p.rework / 100.0)));
+          avgLife = mult * 4;
+          ltv = unitGm * mult;
+          nrr = Math.round(Math.min(125, 78 + mult * 14));
+        } else if (engine === 'capacity') {
+          const freq = Math.max(1.5, 4.4 * (1 - (p.rework / 100.0)));
+          avgLife = 12;
+          ltv = unitGm * freq;
+          nrr = Math.round(Math.min(122, 80 + freq * 8));
+        } else {
+          const rep = Math.max(1.0, 1.45 - (p.rework / 100.0));
+          avgLife = Math.max(1, cccLag + 1);
+          ltv = unitGm * rep;
+          nrr = Math.round(Math.max(65, Math.min(118, 100 - p.rework * 0.7 + p.growth * 0.5)));
+        }
+
+        const ltvCacRatio = cac > 0 ? ltv / cac : (ltv > 0 ? 9.9 : 0);
+        const monthlyContrib = avgLife > 0 ? ltv / avgLife : unitGm;
+        const cacPayback = monthlyContrib > 0 ? cac / monthlyContrib : 99;
+        const beObj = months.find(m => !m.abandoned && m.profit >= 0);
+        const shortfall = Math.max(0, -minCash);
+
+        // 6-Axis Scores
+        const clamp = v => Math.max(12, Math.min(100, Math.round(v)));
+        const opMargin = totalRev > 0 ? (totalProfit / totalRev) * 100 : -40;
+        const lastM = months[horizon - 1];
+        const sProfit = clamp(52 + opMargin * 1.3 + (grossMarginRate - 50) * 0.35);
+        const sUnit = clamp((ltvCacRatio >= 3 ? 68 + Math.min(32, (ltvCacRatio - 3) * 6.5) : ltvCacRatio * 21) - Math.max(0, (cacPayback - 12) * 2));
+        const sCash = clamp((shortfall === 0 ? 76 + Math.min(24, (minCash / Math.max(1, initialCashYen)) * 22) : Math.max(12, 55 - (shortfall / Math.max(1, initialCashYen)) * 55)) - cccLag * 4.5);
+        const sScale = clamp(72 + p.growth * 1.4 - Math.max(0, (Math.max(lastM.supplyUtil, lastM.opsUtil) - 0.85) * 85) - (lastM.unserved > 1 ? 18 : 0));
+        const baseRec = engine === 'subscription' ? 84 : engine === 'repeat_ec' ? 68 : engine === 'capacity' ? 64 : engine === 'marketplace' ? 62 : 48;
+        const sRecur = clamp(baseRec - p.rework * 1.1 + (nrr - 100) * 0.55);
+        const sRisk = clamp(62 + (beObj ? (14 - beObj.month) * 2.2 : -22) + (this.aiEnv.selfAiLeveragePct * 0.3) - Object.values(this.activeBlackSwans).filter(Boolean).length * 8);
+
+        const axes = [
+          { key: 'profit', label: '収益性', score: sProfit, bench: 65 },
+          { key: 'unit', label: '顧客採算', score: sUnit, bench: 68 },
+          { key: 'cash', label: 'CCC耐性', score: sCash, bench: 64 },
+          { key: 'scale', label: '供給拡張', score: sScale, bench: 62 },
+          { key: 'recur', label: '継続力', score: sRecur, bench: 60 },
+          { key: 'risk', label: 'AI危機耐性', score: sRisk, bench: 65 }
+        ];
+        const totalScore = Math.round(axes.reduce((s, a) => s + a.score, 0) / axes.length);
+        const rank = totalScore >= 82 ? 'S' : totalScore >= 72 ? 'A' : totalScore >= 60 ? 'B' : totalScore >= 48 ? 'C' : 'D';
+
+        return {
+          months, totalRev, totalVar, totalProfit, npv, endCash: cash, minCash, shortfall,
+          abandonedMonth, ltv: Math.round(ltv), cac: Math.round(cac),
+          ltvCacRatio: Number(ltvCacRatio.toFixed(2)), cacPayback: Number(cacPayback.toFixed(1)),
+          grossMarginRate: Number(grossMarginRate.toFixed(1)), nrr, cccLag,
+          breakEvenMonth: beObj ? beObj.month : null,
+          unservedLast: Number(lastM.unserved.toFixed(1)),
+          supplyUtilLast: Math.round(lastM.supplyUtil * 100),
+          opsUtilLast: Math.round(lastM.opsUtil * 100),
+          axes, totalScore, rank
+        };
+      },
+
+      // 2,000-Trial CRN Monte Carlo (Static vs Real Options) + VaR / CVaR / Half-Kelly
+      runMonteCarloCRN(effParams, trials = 1200) {
+        const horizon = this.horizonMonths;
+        const staticNpvs = [], optNpvs = [], minCashes = [], optMinCashes = [];
+        const monthlyBands = Array.from({ length: horizon }, () => []);
+        let ruinCountStatic = 0, ruinCountOpt = 0, abandonCountOpt = 0, winCountOpt = 0;
+
+        for (let t = 0; t < trials; t++) {
+          // Common Random Numbers (CRN): identical seed per trial t for Static vs Real Options!
+          const makeRng = () => {
+            let s = (20261111 + t * 104729) >>> 0;
+            return () => { s = (1664525 * s + 1013904223) >>> 0; return s / 4294967296; };
+          };
+
+          const resStatic = this.simulateTrajectory(effParams, { stochastic: true, realOptions: false, rng: makeRng() });
+          const resOpt = this.simulateTrajectory(effParams, { stochastic: true, realOptions: true, rng: makeRng() });
+
+          staticNpvs.push(resStatic.npv);
+          optNpvs.push(resOpt.npv);
+          minCashes.push(resStatic.minCash);
+          optMinCashes.push(resOpt.minCash);
+
+          if (resStatic.minCash < 0) ruinCountStatic++;
+          if (resOpt.minCash < 0) ruinCountOpt++;
+          if (resOpt.abandonedMonth !== null) abandonCountOpt++;
+          if (resOpt.npv > 0) winCountOpt++;
+
+          for (let m = 0; m < horizon; m++) {
+            monthlyBands[m].push(resOpt.months[m].cash / 10000.0); // in 万円
+          }
+        }
+
+        const sortNum = arr => [...arr].sort((a, b) => a - b);
+        const sStatic = sortNum(staticNpvs);
+        const sOpt = sortNum(optNpvs);
+        const sCash = sortNum(optMinCashes);
+
+        const tailCount = Math.max(1, Math.floor(trials * 0.05));
+        const var95Npv = sOpt[tailCount - 1];
+        const cvar95Npv = sOpt.slice(0, tailCount).reduce((a, b) => a + b, 0) / tailCount;
+        const cvar95Static = sStatic.slice(0, tailCount).reduce((a, b) => a + b, 0) / tailCount;
+        const cvar95MinCash = sCash.slice(0, tailCount).reduce((a, b) => a + b, 0) / tailCount;
+
+        const meanStaticNpv = staticNpvs.reduce((a, b) => a + b, 0) / trials;
+        const meanOptNpv = optNpvs.reduce((a, b) => a + b, 0) / trials;
+        const realOptionValue = Math.max(0, meanOptNpv - meanStaticNpv);
+
+        // Generalized Fractional Kelly (Half-Kelly) Capital Sizing
+        const pWin = winCountOpt / trials;
+        const qLoss = 1 - pWin;
+        const capitalCommitted = Math.max(1000000, (effParams.initialCashMan + effParams.setupCostMan) * 10000);
+        const posOutcomes = sOpt.filter(x => x > 0);
+        const negOutcomes = sOpt.filter(x => x <= 0);
+        const avgGainRatio = posOutcomes.length > 0 ? (posOutcomes.reduce((a, b) => a + b, 0) / posOutcomes.length) / capitalCommitted : 0.01;
+        const avgLossRatio = negOutcomes.length > 0 ? Math.min(1.0, Math.max(0.08, Math.abs(negOutcomes.reduce((a, b) => a + b, 0) / negOutcomes.length) / capitalCommitted)) : 0.25;
+
+        let rawKelly = 0;
+        if (avgGainRatio > 0 && avgLossRatio > 0) {
+          rawKelly = (pWin / avgLossRatio) - (qLoss / avgGainRatio);
+        }
+        // Clamp and apply 0.5x Half-Kelly safety factor (and penalize if Risk of Ruin is high)
+        const ruinProbOpt = (ruinCountOpt / trials) * 100;
+        const halfKellyPct = Math.max(0, Math.min(65, Math.round(rawKelly * 0.5 * 100 * (1 - Math.min(0.8, ruinProbOpt / 100)))));
+        const recMaxInvestMan = Math.round(this.aiEnv.totalNetWorthMan * (halfKellyPct / 100.0));
+
+        // Fan chart percentiles (P10 / P50 / P90)
+        const fan = monthlyBands.map((arr, idx) => {
+          const sorted = sortNum(arr);
+          return {
+            month: idx + 1,
+            p10: sorted[Math.floor(trials * 0.10)],
+            p50: sorted[Math.floor(trials * 0.50)],
+            p90: sorted[Math.floor(trials * 0.90)]
+          };
+        });
+
+        return {
+          trials,
+          meanStaticNpvMan: Math.round(meanStaticNpv / 10000),
+          meanOptNpvMan: Math.round(meanOptNpv / 10000),
+          realOptionValueMan: Math.round(realOptionValue / 10000),
+          var95NpvMan: Math.round(var95Npv / 10000),
+          cvar95NpvMan: Math.round(cvar95Npv / 10000),
+          cvar95StaticMan: Math.round(cvar95Static / 10000),
+          cvar95MinCashMan: Math.round(cvar95MinCash / 10000),
+          ruinProbStaticPct: Number(((ruinCountStatic / trials) * 100).toFixed(1)),
+          ruinProbOptPct: Number(ruinProbOpt.toFixed(1)),
+          abandonProbPct: Number(((abandonCountOpt / trials) * 100).toFixed(1)),
+          winProbPct: Number((pWin * 100).toFixed(1)),
+          halfKellyPct,
+          recMaxInvestMan,
+          fan
+        };
+      },
+
+      // Hybrid Grid + Binary Search Goal Seek Solver
+      solveGoalSeek() {
+        const metric = document.getElementById('rv-gs-metric')?.value || 'totalProfit';
+        const targetMan = parseFloat(document.getElementById('rv-gs-target')?.value) || 1500;
+        const targetYen = targetMan * 10000;
+        const leverKey = document.getElementById('rv-gs-lever')?.value || 'leads';
+        const f = RevoBaseFields.find(x => x.key === leverKey);
+        if (!f) return;
+
+        const baseP = this.getEffectiveParams();
+        const evalAt = (val) => {
+          const r = this.simulateTrajectory({ ...baseP, [leverKey]: val }, { stochastic: false });
+          return metric === 'minCash' ? r.minCash : metric === 'npv' ? r.npv : r.totalProfit;
+        };
+
+        const steps = 60;
+        const samples = [];
+        for (let i = 0; i <= steps; i++) {
+          const x = f.min + ((f.max - f.min) * i) / steps;
+          samples.push({ x, y: evalAt(x) });
+        }
+
+        let bracket = null, best = samples[0];
+        for (let i = 0; i < steps; i++) {
+          if (Math.abs(samples[i].y - targetYen) < Math.abs(best.y - targetYen)) best = samples[i];
+          const a = samples[i], b = samples[i + 1];
+          if ((a.y <= targetYen && targetYen <= b.y) || (b.y <= targetYen && targetYen <= a.y)) {
+            bracket = [a, b];
+            break;
+          }
+        }
+
+        const outEl = document.getElementById('rv-gs-result');
+        if (!bracket) {
+          const bestVal = Number(best.x.toFixed(1));
+          if (outEl) {
+            outEl.innerHTML = `⚠️ 単独レバーではキャパ上限等の制約により目標（${formatManYen(targetMan)}）に届きません。最高到達点: <strong>${f.label} = ${bestVal}${f.unit}</strong>（結果: ${formatManYen(Math.round(best.y / 10000))}） <button type="button" onclick="RevoEngine.applyPatch({${leverKey}: ${bestVal}}, 'ゴールシーク最接近値')" class="btn" style="min-height:26px;padding:2px 8px;font-size:11.5px;">この値を適用</button>`;
+          }
+          return;
+        }
+
+        let lo = bracket[0].x, hi = bracket[1].x;
+        const inc = bracket[1].y >= bracket[0].y;
+        for (let it = 0; it < 24; it++) {
+          const mid = (lo + hi) / 2;
+          const y = evalAt(mid);
+          if ((inc && y < targetYen) || (!inc && y > targetYen)) lo = mid; else hi = mid;
+        }
+        const solved = f.step >= 1 ? Math.round(((lo + hi) / 2) / f.step) * f.step : Number(((lo + hi) / 2).toFixed(1));
+        if (outEl) {
+          outEl.innerHTML = `✅ 逆算完了：目標 <strong>${formatManYen(targetMan)}</strong> を達成するには、<strong>${f.label}</strong> を現在値 ${baseP[leverKey]}${f.unit} ➔ <strong class="accent-text">${solved}${f.unit}</strong> に設定してください。 <button type="button" onclick="RevoEngine.applyPatch({${leverKey}: ${solved}}, 'ゴールシーク逆算適用')" class="btn btn-primary" style="min-height:26px;padding:2px 10px;font-size:11.5px;">⚡ ワンクリック適用</button>`;
+        }
+        if (typeof GameSfx !== 'undefined') GameSfx.play('coin');
+      },
+
+      // Tornado Sensitivity Levers Top 5
+      computeSensitivityTop5(effParams, baseDet) {
+        const levers = [
+          { key: 'priceFactor', delta: 15, title: '提供単価・ARPUを +15% 引き上げ', action: '松竹梅3段プライシング・保証付き上位プラン導入' },
+          { key: 'conversion', delta: 8, title: '商談成約率を +8pt 改善', action: '定量ROI試算シート提示・導入事例の標準化' },
+          { key: 'rework', delta: -2, title: '解約・離脱・手戻り率を 2pt 低減', action: '初期オンボーディング自動化・QMSチェックリスト徹底' },
+          { key: 'cccMonths', delta: -1, title: '売掛回収サイト(CCC)を 1ヶ月短縮', action: '前受金・クレカ即時決済・口座振替への契約変更' },
+          { key: 'leads', delta: Math.max(10, Math.round(effParams.leads * 0.2)), title: '月間見込み流入を +20% 拡大', action: '異業種アライアンス提携・紹介チャネル開拓' },
+          { key: 'contractorDays', delta: 25, title: '現場提供・供給キャパを +25人日 増強', action: 'AI自動化＋認定パートナー外注網の確保で失注解消' },
+          { key: 'fixedCostMan', delta: -Math.max(5, Math.round(effParams.fixedCostMan * 0.15)), title: '月額固定費を 15% スリム化', action: '定型バックオフィスのAIエージェント代替・変動費化' }
+        ];
+        return levers.map(lv => {
+          const f = RevoBaseFields.find(x => x.key === lv.key);
+          if (!f) return null;
+          const nextVal = Math.max(f.min, Math.min(f.max, Number((effParams[lv.key] + lv.delta).toFixed(1))));
+          if (nextVal === effParams[lv.key]) return null;
+          const alt = this.simulateTrajectory({ ...effParams, [lv.key]: nextVal }, { stochastic: false });
+          return {
+            ...lv,
+            nextVal,
+            unit: f.unit,
+            dProfitMan: Math.round((alt.totalProfit - baseDet.totalProfit) / 10000),
+            dCashMan: Math.round((alt.minCash - baseDet.minCash) / 10000)
+          };
+        }).filter(Boolean).sort((a, b) => (b.dProfitMan + b.dCashMan * 0.5) - (a.dProfitMan + a.dCashMan * 0.5)).slice(0, 5);
+      },
+
+      // 6-Perspective Devil's Advocate Committee
+      buildCommitteeReviews(effParams, det, mc) {
+        const bm = RevoModels[this.modelId] || RevoModels.revo_v3;
+        return [
+          {
+            role: '🏦 銀行融資・財務リスク審査役',
+            verdict: mc.ruinProbOptPct < 10 && det.shortfall === 0 ? '融資適格・返済余力あり' : '資金ショート・黒字倒産警戒',
+            critique: det.shortfall > 0
+              ? `期間中に最大 ${formatManYen(Math.round(det.shortfall / 10000))} の現金不足が発生しています。さらに下位5%危機時（95% CVaR）の最低現金は ${formatManYen(mc.cvar95MinCashMan)} です。CCC（現在${effParams.cccMonths}ヶ月）の短縮と運転資金増強が必須です。`
+              : `通常時の最低現金は ${formatManYen(Math.round(det.minCash / 10000))} とプラスですが、ブラックスワン発生時の95% CVaR最低現金は ${formatManYen(mc.cvar95MinCashMan)}（破産確率 ${mc.ruinProbOptPct}%）です。前受決済化でCCCを0〜1ヶ月へ圧縮してください。`,
+            actionLabel: 'CCC回収サイト短縮＋安全運転資金+250万',
+            patch: { cccMonths: Math.max(0, effParams.cccMonths - 1), initialCashMan: effParams.initialCashMan + 250 }
+          },
+          {
+            role: '🚀 COO（現場執行・キャパ監査）',
+            verdict: det.unservedLast > 1 || effParams.rework > 6 ? '現場パンク・品質崩壊リスク' : 'オペレーション健全',
+            critique: det.unservedLast > 1
+              ? `最終月に供給枠不足で ${det.unservedLast}件/月 の機会損失（失注）が発生しています（供給稼働率 ${det.supplyUtilLast}%）。集客を増やす前にAI省力化と供給枠拡大が必要です。`
+              : `供給稼働率 ${det.supplyUtilLast}%・フロント稼働率 ${det.opsUtilLast}%・離脱/手戻り率 ${effParams.rework}%。稼働率80%超で急激に納期遅延キャンセルが連鎖するため標準SOPを徹底してください。`,
+            actionLabel: '供給枠+25%＆手戻り・離脱率を改善',
+            patch: { contractorDays: Math.min(1000, Math.round(effParams.contractorDays * 1.25)), rework: Math.max(1, Number((effParams.rework * 0.7).toFixed(1))) }
+          },
+          {
+            role: '📈 グロースCMO（Unit Economics監査）',
+            verdict: det.ltvCacRatio >= 3.0 ? `LTV/CAC ${det.ltvCacRatio}x 優良` : `LTV/CAC ${det.ltvCacRatio}x 要改善`,
+            critique: `推定LTV ¥${det.ltv.toLocaleString()} ÷ CAC ¥${det.cac.toLocaleString()} ＝ ${det.ltvCacRatio}倍（回収 ${det.cacPayback}ヶ月）。${det.ltvCacRatio < 3.0 ? '健全基準3.0倍未満のため、広告を踏むほど現金が溶けます。上位プラン誘導で単価を引き上げてください。' : '顧客採算は健全です。提携チャネルでCPAを抑えたままスケール可能です。'}`,
+            actionLabel: '上位プラン誘導で単価+15%＆成約率+5pt',
+            patch: { priceFactor: Math.min(240, effParams.priceFactor + 15), conversion: Math.min(95, effParams.conversion + 5) }
+          },
+          {
+            role: '💎 VC・機関投資家（AI耐性＆オプション価値）',
+            verdict: mc.meanOptNpvMan > 0 && this.aiEnv.selfAiLeveragePct >= 30 ? 'AI追い風・高成長' : 'AI価格破壊に脆弱',
+            critique: `AI単価下落圧力（年-${this.aiEnv.priceDecayAnnualPct}%）に対し、自社AI武装度は ${this.aiEnv.selfAiLeveragePct}%。撤退・拡大のリアルオプション導入により期待NPVが ${formatManYen(mc.meanStaticNpvMan)} ➔ ${formatManYen(mc.meanOptNpvMan)}（+${formatManYen(mc.realOptionValueMan)}）改善しています。`,
+            actionLabel: 'ストック成長率+2pt＆固定費12%AI圧縮',
+            patch: { growth: Math.min(25, effParams.growth + 2), fixedCostMan: Math.max(10, Math.round(effParams.fixedCostMan * 0.88)) }
+          },
+          {
+            role: '🤝 M&A・アライアンス参謀',
+            verdict: '提携レバレッジ余地あり',
+            critique: `自前広告（現在CPL ¥${effParams.leadCost.toLocaleString()}）一本足はプラットフォーム規約変更のブラックスワンに無防備です。顧客プールを持つ異業種（管理会社・士業・金融機関等）との送客提携で獲得単価を半減させてください。`,
+            actionLabel: '送客アライアンスで流入+20%・CPL 40%削減',
+            patch: { leads: Math.min(5000, Math.round(effParams.leads * 1.20)), leadCost: Math.round(effParams.leadCost * 0.60) }
+          },
+          {
+            role: '⚖️ 契約法務・コンプライアンス統括官',
+            verdict: effParams.eligible < 95 ? '収益漏れ・中抜き警戒' : '契約防衛良好',
+            critique: `『${bm.businessType}』では、①直接取引（中抜き）違約金条項、②7日以内みなし検収条項、③スコープ外作業の有償化を契約書で定義しないと課金対象率（現在${effParams.eligible}%）と回収率が毀損します。`,
+            actionLabel: 'みなし検収・中抜き防止条項で課金率+8pt',
+            patch: { eligible: Math.min(100, effParams.eligible + 8) }
+          }
+        ];
+      },
+
+      parseQuickText() {
+        const inp = document.getElementById('rv-quick-nlp');
+        if (!inp || !inp.value.trim()) return;
+        const txt = inp.value;
+        const rules = [
+          { key: 'leads', rx: /(?:リード|流入|相談|集客)[^0-9]*(\d+(?:\.\d+)?)/ },
+          { key: 'conversion', rx: /(?:成約率|CVR|転換率)[^0-9]*(\d+(?:\.\d+)?)/i },
+          { key: 'fixedCostMan', rx: /(?:固定費|家賃|人件費)[^0-9]*(\d+(?:\.\d+)?)/ },
+          { key: 'initialCashMan', rx: /(?:手元資金|自己資金|初期資金|開始資金)[^0-9]*(\d+(?:\.\d+)?)/ },
+          { key: 'cccMonths', rx: /(?:入金|サイト|ラグ|CCC)[^0-9]*(\d+(?:\.\d+)?)/i },
+          { key: 'rework', rx: /(?:解約率|チャーン|離脱率|手戻り)[^0-9]*(\d+(?:\.\d+)?)/ }
+        ];
+        let count = 0;
+        rules.forEach(r => {
+          const m = txt.match(r.rx);
+          if (m) {
+            const f = RevoBaseFields.find(x => x.key === r.key);
+            const v = parseFloat(m[1]);
+            if (f && Number.isFinite(v)) {
+              this.params[r.key] = Math.max(f.min, Math.min(f.max, v));
+              count++;
+            }
+          }
+        });
+        this.syncSlidersFromParams();
+        if (typeof GameSfx !== 'undefined') {
+          GameSfx.play(count > 0 ? 'coin' : 'alert');
+          GameSfx.popText(count > 0 ? `✨ ${count}項目の条件を反映！` : '数値が見つかりませんでした', count > 0, inp);
+        }
+        if (count > 0) this.runAll(false);
+      },
+
+      saveSlot(idx) {
+        if (!this.lastDet || !this.lastMc) return;
+        const bm = RevoModels[this.modelId] || RevoModels.revo_v3;
+        this.portfolioSlots[idx] = {
+          savedAt: new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }),
+          modelName: bm.name.replace(/^[^\s]+\s/, '').slice(0, 22),
+          horizon: this.horizonMonths,
+          score: this.lastDet.totalScore,
+          rank: this.lastDet.rank,
+          optNpvMan: this.lastMc.meanOptNpvMan,
+          cvarMan: this.lastMc.cvar95NpvMan,
+          ruinPct: this.lastMc.ruinProbOptPct,
+          ltvCac: this.lastDet.ltvCacRatio,
+          kellyMan: this.lastMc.recMaxInvestMan,
+          paramsSnap: { ...this.params },
+          modelId: this.modelId
+        };
+        if (typeof GameSfx !== 'undefined') {
+          GameSfx.play('coin');
+          GameSfx.popText(`📌 案${['A', 'B', 'C'][idx]}に保存しました`, true);
+        }
+        this.renderPortfolioSlots();
+      },
+
+      renderPortfolioSlots() {
+        const box = document.getElementById('rv-portfolio-grid');
+        if (!box) return;
+        // Determine winner among filled slots by Risk-Adjusted Score (optNpvMan - |cvarMan|*0.4)
+        let bestIdx = -1, bestMetric = -Infinity;
+        this.portfolioSlots.forEach((sl, i) => {
+          if (!sl) return;
+          const m = sl.optNpvMan - Math.abs(Math.min(0, sl.cvarMan)) * 0.5 - sl.ruinPct * 15;
+          if (m > bestMetric) { bestMetric = m; bestIdx = i; }
+        });
+
+        box.innerHTML = [0, 1, 2].map(i => {
+          const label = ['案A', '案B', '案C'][i];
+          const sl = this.portfolioSlots[i];
+          if (!sl) {
+            return `
+              <div class="col-4 stack-sm" style="padding: 12px; background: var(--color-bg); border: 1px dashed var(--color-border);">
+                <div class="flex-between">
+                  <strong>${label}（未保存）</strong>
+                  <button type="button" onclick="RevoEngine.saveSlot(${i})" class="btn" style="min-height:26px;padding:2px 10px;font-size:11.5px;">＋ 現在の試算を保存</button>
+                </div>
+                <p class="meta-text" style="font-size:12px;">条件を変えて保存すると、リスク調整後リターンで3案の優劣を自動判定します。</p>
+              </div>
+            `;
+          }
+          const isWin = i === bestIdx && this.portfolioSlots.filter(Boolean).length >= 2;
+          return `
+            <div class="col-4 stack-sm" style="padding: 12px; background: var(--color-bg); border: ${isWin ? '2px solid var(--color-accent)' : '1px solid var(--color-border)'};">
+              <div class="flex-between">
+                <strong>${label}: ${sl.modelName} ${isWin ? '👑 最有力' : ''}</strong>
+                <button type="button" onclick="RevoEngine.saveSlot(${i})" class="btn" style="min-height:24px;padding:2px 8px;font-size:11px;">上書き</button>
+              </div>
+              <div class="meta-text tabular" style="font-size:12px;">
+                総合評価: <strong>${sl.rank} (${sl.score}点)</strong> ｜ LTV/CAC: <strong>${sl.ltvCac}x</strong><br>
+                期待NPV: <strong class="accent-text">${formatManYen(sl.optNpvMan)}</strong> ｜ 95%CVaR: <strong>${formatManYen(sl.cvarMan)}</strong><br>
+                破産確率: <strong>${sl.ruinPct}%</strong> ｜ Half-Kelly上限: <strong>${formatManYen(sl.kellyMan)}</strong>
+              </div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      // Bidirectional sync with Tab 02 (50-Year & Practical PL/CF & 5Y CEO Game)
+      pullFromTab02() {
+        const up = parseFloat(document.getElementById('cb-unit-price')?.value) || 14;
+        const cust = parseFloat(document.getElementById('cb-monthly-cust')?.value) || 25;
+        const fixed = parseFloat(document.getElementById('cb-fixed')?.value) || 140;
+        const cash = parseFloat(document.getElementById('cb-cash')?.value) || 600;
+        const capex = parseFloat(document.getElementById('cb-capex-man')?.value) || 300;
+
+        this.params.leads = Math.max(10, Math.round(cust / 0.32));
+        this.params.qualified = 70;
+        this.params.conversion = 46;
+        this.params.fixedCostMan = Math.round(fixed);
+        this.params.initialCashMan = Math.round(cash);
+        this.params.setupCostMan = Math.round(capex);
+        // Scale priceFactor relative to current model base price
+        const bm = RevoModels[this.modelId] || RevoModels.revo_v3;
+        const w = bm.products.reduce((s, x) => s + x.share, 0) || 1;
+        const avgP = bm.products.reduce((s, x) => s + x.share * x.price, 0) / w;
+        const targetYen = up * 10000;
+        this.params.priceFactor = Math.max(40, Math.min(250, Math.round((targetYen / Math.max(1000, avgP)) * 100)));
+
+        this.syncSlidersFromParams();
+        if (typeof GameSfx !== 'undefined') {
+          GameSfx.play('build');
+          GameSfx.popText('📥 02タブの事業条件を取り込みました！', true);
+        }
+        this.runAll(false);
+      },
+
+      pushToTab02() {
+        if (!this.lastDet) return;
+        const eff = this.getEffectiveParams();
+        const m6 = this.lastDet.months[Math.min(5, this.lastDet.months.length - 1)];
+        const revMan = Math.max(10, Math.round((m6.fee + m6.streamRev) / 10000));
+        const cust = Math.max(1, Math.round(m6.activeCustomers || m6.served || 20));
+        const unitPriceMan = Number(Math.max(0.2, revMan / cust).toFixed(2));
+
+        const setV = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+        setV('cb-unit-price', unitPriceMan);
+        setV('cb-monthly-cust', cust);
+        setV('cb-rev', revMan);
+        setV('cb-gm', Math.min(95, Math.max(15, Math.round(this.lastDet.grossMarginRate))));
+        setV('cb-fixed', Math.round(eff.fixedCostMan));
+        setV('cb-cash', Math.round(eff.initialCashMan));
+        setV('cb-capex-man', Math.round(eff.setupCostMan));
+
+        runCustomBizSim();
+        if (typeof CeoTurnGame !== 'undefined') CeoTurnGame.initFromInputs(false);
+        if (typeof GameSfx !== 'undefined') {
+          GameSfx.play('fanfare');
+          GameSfx.popText('📤 02タブ（50年計画＆社長ゲーム）へ反映！', true);
+        }
+        switchView('custombiz');
+      },
+
+      exportReportCsv() {
+        if (!this.lastDet || !this.lastMc) return;
+        const det = this.lastDet, mc = this.lastMc;
+        const lines = [
+          ['月', '見込流入', '成約提供数', '失注(枠不足)', '月次売上(万円)', '変動費(万円)', '固定費(万円)', '営業損益(万円)', '月末現預金(万円)', '売掛金残高AR(万円)', 'MC下位10%現金(万円)', 'MC中央値P50現金(万円)', 'MC上位90%現金(万円)'].join(',')
+        ];
+        det.months.forEach((m, i) => {
+          const f = mc.fan[i] || { p10: 0, p50: 0, p90: 0 };
+          lines.push([
+            `${m.month}ヶ月目`,
+            Math.round(m.leads),
+            Number(m.served.toFixed(1)),
+            Number(m.unserved.toFixed(1)),
+            Math.round((m.fee + m.streamRev) / 10000),
+            Math.round(m.variable / 10000),
+            Math.round(m.fixed / 10000),
+            Math.round(m.profit / 10000),
+            Math.round(m.cash / 10000),
+            Math.round(m.ar / 10000),
+            Math.round(f.p10),
+            Math.round(f.p50),
+            Math.round(f.p90)
+          ].join(','));
+        });
+        const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `revo_ai_risk_simulation_${this.modelId}_${this.horizonMonths}m.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        if (typeof GameSfx !== 'undefined') GameSfx.play('coin');
+      },
+
+      copyExecutiveBrief() {
+        if (!this.lastDet || !this.lastMc) return;
+        const bm = RevoModels[this.modelId];
+        const d = this.lastDet, mc = this.lastMc;
+        const txt = [
+          `【マルチ業種統合・投資リスク＆AI環境審査サマリー】`,
+          `・対象モデル: ${bm.name} (${this.horizonMonths}ヶ月検証)`,
+          `・6軸総合ランク: ${d.rank} (${d.totalScore}/100点) / LTV/CAC: ${d.ltvCacRatio}倍 (回収${d.cacPayback}ヶ月) / CCC: ${d.cccLag}ヶ月`,
+          `・期待NPV (撤退・拡大リアルオプション込): ${formatManYen(mc.meanOptNpvMan)} (硬直計画比 +${formatManYen(mc.realOptionValueMan)})`,
+          `・ダウンサイドリスク: 破産確率 ${mc.ruinProbOptPct}% / 95% VaR ${formatManYen(mc.var95NpvMan)} / 95% CVaR(期待ショートフォール) ${formatManYen(mc.cvar95NpvMan)}`,
+          `・Half-Kelly 推奨投資上限: 保有資産 ${formatManYen(this.aiEnv.totalNetWorthMan)} の ${mc.halfKellyPct}%（最大 ${formatManYen(mc.recMaxInvestMan)} まで）`,
+          `・AI環境前提: 単価下落圧力 -${this.aiEnv.priceDecayAnnualPct}%/年, AI代替離脱 +${this.aiEnv.churnShockPct}%/月, 自社AI省力化 ${this.aiEnv.selfAiLeveragePct}%`
+        ].join('\n');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).catch(() => {});
+        }
+        if (typeof GameSfx !== 'undefined') {
+          GameSfx.play('coin');
+          GameSfx.popText('📋 投資委員会サマリーをコピーしました！', true);
+        }
+      },
+
+      runAll(playSound = false) {
+        this.readInputs();
+        const eff = this.getEffectiveParams();
+        const det = this.simulateTrajectory(eff, { stochastic: false, realOptions: false });
+        const mc = this.runMonteCarloCRN(eff, 1000);
+        this.lastDet = det;
+        this.lastMc = mc;
+
+        this.renderDashboard(eff, det, mc);
+        this.renderRadarCanvas();
+        this.renderFanCanvas();
+
+        if (typeof MetaGame !== 'undefined' && MetaGame.initialized) {
+          if (Object.values(this.activeBlackSwans).some(Boolean)) {
+            MetaGame.unlock('revo_blackswan', playSound);
+          }
+          if (mc.ruinProbOptPct < 10 && mc.meanOptNpvMan > 0 && det.ltvCacRatio >= 3.0) {
+            MetaGame.unlock('revo_go_verdict', playSound);
+          }
+        }
+        if (playSound && typeof GameSfx !== 'undefined') GameSfx.play('click');
+      },
+
+      renderDashboard(eff, det, mc) {
+        // 1. Investment Committee Verdict Banner
+        let verdictCode = 'HOLD';
+        let verdictTitle = '🟡 CONDITIONAL GO（条件付・段階投資を推奨）';
+        let verdictSub = '期待値はプラスですが、売掛サイト(CCC)または危機時の破産確率に注意が必要です。撤退ラインを契約・予算に明記して小規模PoCから開始してください。';
+        if (mc.meanOptNpvMan > 0 && mc.ruinProbOptPct < 10 && det.ltvCacRatio >= 2.8 && det.shortfall === 0) {
+          verdictCode = 'GO';
+          verdictTitle = '🟢 GO（投資実行適格：リスク調整後リターン良好）';
+          verdictSub = `1,000試行のAI変動＆Mertonジャンプ下でも破産確率 ${mc.ruinProbOptPct}% に抑えられ、LTV/CAC ${det.ltvCacRatio}倍・リアルオプション期待NPV ${formatManYen(mc.meanOptNpvMan)} を確保しています。`;
+        } else if (mc.meanOptNpvMan <= 0 || mc.ruinProbOptPct >= 25 || det.ltvCacRatio < 1.6) {
+          verdictCode = 'NOGO';
+          verdictTitle = '🔴 NO-GO（投資見送り警告：構造改善が先決）';
+          verdictSub = `現状のまま投資すると破産・資金ショート確率が ${mc.ruinProbOptPct}% に達するか、LTV/CAC (${det.ltvCacRatio}x)・期待NPV (${formatManYen(mc.meanOptNpvMan)}) が基準未達です。下の6人の審査官パッチで構造を修正してください。`;
+        }
+
+        const vBadge = document.getElementById('rv-verdict-badge');
+        if (vBadge) {
+          vBadge.style.borderColor = verdictCode === 'GO' ? '#10b981' : (verdictCode === 'HOLD' ? '#f59e0b' : 'var(--color-accent)');
+          vBadge.innerHTML = `
+            <div class="flex-between">
+              <strong style="font-size: 16px;">${verdictTitle}</strong>
+              <span class="caption-label tabular">6軸総合スコア: <strong>${det.rank}ランク (${det.totalScore}/100点)</strong> ｜ 勝率(NPV>0): ${mc.winProbPct}%</span>
+            </div>
+            <p class="meta-text" style="margin-top: 4px;">${verdictSub}</p>
+          `;
+        }
+
+        // 2. Institutional Quantitative Risk KPI Strip (8 Metrics in 2 strips)
+        const kpiBox = document.getElementById('rv-quant-kpis');
+        if (kpiBox) {
+          const committedMan = eff.initialCashMan + eff.setupCostMan;
+          const overKelly = committedMan > mc.recMaxInvestMan;
+          kpiBox.innerHTML = `
+            <div class="metric-cell">
+              <span class="caption-label">期待NPV (リアルオプション込)</span>
+              <div class="metric-value tabular ${mc.meanOptNpvMan >= 0 ? 'accent-text' : ''}">${formatManYen(mc.meanOptNpvMan)}</div>
+              <div class="meta-text tabular">硬直計画NPV: ${formatManYen(mc.meanStaticNpvMan)} (柔軟性価値 <strong>+${formatManYen(mc.realOptionValueMan)}</strong>)</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">95% VaR / CVaR (最悪5%平均損失)</span>
+              <div class="metric-value tabular">${formatManYen(mc.cvar95NpvMan)}</div>
+              <div class="meta-text tabular">95%VaR: ${formatManYen(mc.var95NpvMan)} (撤退ルール無なら ${formatManYen(mc.cvar95StaticMan)})</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">放置時の破産確率 / 撤退防衛</span>
+              <div class="metric-value tabular ${mc.ruinProbStaticPct >= 15 ? 'accent-text' : ''}">${mc.ruinProbStaticPct}% <small style="font-size:13px;">➔ ${mc.ruinProbOptPct}%</small></div>
+              <div class="meta-text tabular">損切発動率: ${mc.abandonProbPct}% / CCC ${det.cccLag}ヶ月 (危機最低現金 ${formatManYen(mc.cvar95MinCashMan)})</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">Half-Kelly 推奨投資上限枠</span>
+              <div class="metric-value tabular">${formatManYen(mc.recMaxInvestMan)} <small style="font-size:13px;">(${mc.halfKellyPct}%)</small></div>
+              <div class="meta-text tabular">${overKelly ? `⚠️ 現在投入 ${formatManYen(committedMan)} は過大リスク` : `✅ 現在投入 ${formatManYen(committedMan)} は適正範囲内`}</div>
+            </div>
+          `;
+        }
+
+        const kpiBox2 = document.getElementById('rv-unit-kpis');
+        if (kpiBox2) {
+          kpiBox2.innerHTML = `
+            <div class="metric-cell">
+              <span class="caption-label">LTV / CAC ＆ 回収月数</span>
+              <div class="metric-value tabular">${det.ltvCacRatio}x</div>
+              <div class="meta-text tabular">LTV ¥${det.ltv.toLocaleString()} / CAC ¥${det.cac.toLocaleString()} (${det.cacPayback}ヶ月回収)</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">期間累計売上 / 営業利益 (${this.horizonMonths}M)</span>
+              <div class="metric-value tabular">${formatManYen(Math.round(det.totalProfit / 10000))}</div>
+              <div class="meta-text tabular">売上 ${formatManYen(Math.round(det.totalRev / 10000))} / 粗利率 ${det.grossMarginRate}%</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">単月黒字化 ＆ 死の谷(最低現金)</span>
+              <div class="metric-value tabular">${det.breakEvenMonth ? det.breakEvenMonth + 'ヶ月目' : '未達'}</div>
+              <div class="meta-text tabular">最低現金: ${formatManYen(Math.round(det.minCash / 10000))} / NRR ${det.nrr}%</div>
+            </div>
+            <div class="metric-cell">
+              <span class="caption-label">キャパ稼働率 ＆ 機会損失(失注)</span>
+              <div class="metric-value tabular">${det.supplyUtilLast}%</div>
+              <div class="meta-text tabular">フロント稼働 ${det.opsUtilLast}% / 枠不足失注: <strong>${det.unservedLast}件/月</strong></div>
+            </div>
+          `;
+        }
+
+        // 3. Black Swan Buttons
+        const bsGrid = document.getElementById('rv-bs-grid');
+        if (bsGrid) {
+          bsGrid.innerHTML = RevoBlackSwans.map(bs => {
+            const on = !!this.activeBlackSwans[bs.id];
+            return `
+              <div class="col-4 stack-sm" style="padding: 10px 12px; background: var(--color-bg); border: ${on ? '2px solid var(--color-accent)' : '1px solid var(--color-border)'};">
+                <div class="flex-between">
+                  <strong style="font-size: 12.5px; color: ${on ? 'var(--color-accent)' : 'var(--color-text)'};">${bs.shortTitle}</strong>
+                  <button type="button" onclick="RevoEngine.toggleBlackSwan('${bs.id}')" class="btn ${on ? 'btn-primary' : ''}" style="min-height:24px;padding:2px 8px;font-size:11px;">${on ? '発火中 ON' : '危機を発火'}</button>
+                </div>
+                <p class="meta-text" style="font-size: 11.5px; line-height: 1.4;">${bs.desc}</p>
+                <button type="button" onclick="RevoEngine.applyAntifragileFor('${bs.id}')" class="btn" style="min-height:24px;padding:2px 8px;font-size:11px;width:100%;">🛡️ 対策: ${bs.antifragileLabel}</button>
+              </div>
+            `;
+          }).join('');
+        }
+
+        // 4. Tornado Sensitivity Top 5
+        const sensBox = document.getElementById('rv-sensitivity-list');
+        if (sensBox) {
+          const top5 = this.computeSensitivityTop5(eff, det);
+          sensBox.innerHTML = top5.map((s, idx) => `
+            <div class="flex-between" style="padding: 8px 10px; background: var(--color-bg); border: 1px solid var(--color-border);">
+              <div>
+                <strong style="font-size: 12.5px;">#${idx + 1} ${s.title}</strong>
+                <div class="meta-text" style="font-size: 11.5px;">${s.action}</div>
+              </div>
+              <div style="text-align: right; display:flex; align-items:center; gap:8px;">
+                <span class="tabular accent-text" style="font-size:12.5px;font-weight:700;">利益 ${s.dProfitMan >= 0 ? '+' : ''}${formatManYen(s.dProfitMan)}</span>
+                <button type="button" onclick="RevoEngine.applyPatch({${s.key}: ${s.nextVal}}, '${s.title}')" class="btn" style="min-height:24px;padding:2px 8px;font-size:11px;">適用</button>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        // 5. 6-Expert Devil's Advocate Committee
+        const expBox = document.getElementById('rv-committee-grid');
+        if (expBox) {
+          const reviews = this.buildCommitteeReviews(eff, det, mc);
+          expBox.innerHTML = reviews.map(r => `
+            <div class="col-4 stack-sm" style="padding: 12px; background: var(--color-bg); border: 1px solid var(--color-border);">
+              <div class="flex-between">
+                <strong style="font-size: 13px;">${r.role}</strong>
+                <span class="caption-label accent-text">${r.verdict}</span>
+              </div>
+              <p class="meta-text" style="font-size: 12px; line-height: 1.45;">${r.critique}</p>
+              <button type="button" onclick='RevoEngine.applyPatch(${JSON.stringify(r.patch)}, "${r.actionLabel}")' class="btn" style="min-height:26px;padding:3px 8px;font-size:11.5px;width:100%;">⚡ ${r.actionLabel}</button>
+            </div>
+          `).join('');
+        }
+
+        this.renderPortfolioSlots();
+      },
+
+      renderRadarCanvas() {
+        const c = document.getElementById('revoRadarCanvas');
+        if (!c || !this.lastDet) return;
+        const ctx = c.getContext('2d');
+        const w = c.width, h = c.height;
+        const det = this.lastDet;
+        ctx.fillStyle = '#0b1524';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w / 2, cy = h / 2 + 12, rad = Math.min(w, h) * 0.25;
+        const axes = det.axes;
+        const n = axes.length;
+
+        // Concentric hex webs
+        [0.25, 0.5, 0.75, 1.0].forEach(lv => {
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.22)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for (let i = 0; i < n; i++) {
+            const ang = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+            const x = cx + Math.cos(ang) * rad * lv;
+            const y = cy + Math.sin(ang) * rad * lv;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+          ctx.stroke();
+        });
+
+        // Benchmark polygon
+        ctx.strokeStyle = 'rgba(245, 213, 138, 0.65)';
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        axes.forEach((a, i) => {
+          const ang = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+          const x = cx + Math.cos(ang) * rad * (a.bench / 100);
+          const y = cy + Math.sin(ang) * rad * (a.bench / 100);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Model score polygon (subtle breathing pulse)
+        const pulse = 1 + Math.sin((app.tick || 0) * 0.06) * 0.015;
+        ctx.fillStyle = 'rgba(78, 242, 210, 0.24)';
+        ctx.strokeStyle = '#4ef2d2';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        axes.forEach((a, i) => {
+          const ang = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+          const rVal = Math.min(1.02, (a.score / 100) * pulse);
+          const x = cx + Math.cos(ang) * rad * rVal;
+          const y = cy + Math.sin(ang) * rad * rVal;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Labels
+        ctx.font = 'bold 12px sans-serif';
+        axes.forEach((a, i) => {
+          const ang = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+          const lx = cx + Math.cos(ang) * (rad + 26);
+          const ly = cy + Math.sin(ang) * (rad + 18);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.textAlign = Math.cos(ang) > 0.25 ? 'left' : (Math.cos(ang) < -0.25 ? 'right' : 'center');
+          ctx.fillText(`${a.label} ${a.score}`, lx, ly + 4);
+        });
+        ctx.textAlign = 'left';
+
+        ctx.fillStyle = '#f5d58a';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.fillText(`🧭 事業 6軸評価: 総合 ${det.rank} (${det.totalScore}点)`, 12, 22);
+      },
+
+      renderFanCanvas() {
+        const c = document.getElementById('revoRiskAnimCanvas');
+        if (!c || !this.lastMc || !this.lastDet) return;
+        const ctx = c.getContext('2d');
+        const w = c.width, h = c.height;
+        const fan = this.lastMc.fan;
+        const hasBs = Object.values(this.activeBlackSwans).some(Boolean);
+
+        ctx.fillStyle = hasBs ? '#1f1019' : '#091423';
+        ctx.fillRect(0, 0, w, h);
+
+        const padL = 62, padR = 22, padT = 38, padB = 30;
+        const pw = w - padL - padR, ph = h - padT - padB;
+
+        let minV = 0, maxV = 500;
+        fan.forEach(f => {
+          minV = Math.min(minV, f.p10);
+          maxV = Math.max(maxV, f.p90);
+        });
+        const span = Math.max(100, maxV - minV);
+        minV -= span * 0.08;
+        maxV += span * 0.08;
+
+        const xAt = (i) => padL + (i / Math.max(1, fan.length - 1)) * pw;
+        const yAt = (v) => padT + ph - ((v - minV) / (maxV - minV)) * ph;
+
+        // Zero bankruptcy line
+        if (minV < 0 && maxV > 0) {
+          const y0 = yAt(0);
+          ctx.strokeStyle = '#ff6b6b';
+          ctx.setLineDash([5, 4]);
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(padL, y0); ctx.lineTo(w - padR, y0); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#ff8787';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('⚠️ 資金ショート境界 (¥0)', padL + 6, y0 - 5);
+        }
+
+        // Cone of Uncertainty Band (P10 to P90)
+        ctx.fillStyle = 'rgba(86, 207, 225, 0.18)';
+        ctx.beginPath();
+        fan.forEach((f, i) => { if (i === 0) ctx.moveTo(xAt(i), yAt(f.p90)); else ctx.lineTo(xAt(i), yAt(f.p90)); });
+        for (let i = fan.length - 1; i >= 0; i--) ctx.lineTo(xAt(i), yAt(fan[i].p10));
+        ctx.closePath();
+        ctx.fill();
+
+        // P90 Upside Line
+        ctx.strokeStyle = '#64dfdf';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        fan.forEach((f, i) => { if (i === 0) ctx.moveTo(xAt(i), yAt(f.p90)); else ctx.lineTo(xAt(i), yAt(f.p90)); });
+        ctx.stroke();
+
+        // P10 Downside Tail Line
+        ctx.strokeStyle = '#ff758f';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        fan.forEach((f, i) => { if (i === 0) ctx.moveTo(xAt(i), yAt(f.p10)); else ctx.lineTo(xAt(i), yAt(f.p10)); });
+        ctx.stroke();
+
+        // P50 Median Line
+        ctx.strokeStyle = '#ffd166';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        fan.forEach((f, i) => { if (i === 0) ctx.moveTo(xAt(i), yAt(f.p50)); else ctx.lineTo(xAt(i), yAt(f.p50)); });
+        ctx.stroke();
+
+        // Animated scanning wave along P50/P10
+        const idx = Math.floor(((app.tick || 0) * 0.35) % fan.length);
+        const cur = fan[idx];
+        if (cur) {
+          const sx = xAt(idx);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(sx, padT); ctx.lineTo(sx, h - padB); ctx.stroke();
+
+          ctx.fillStyle = '#ffd166';
+          ctx.beginPath(); ctx.arc(sx, yAt(cur.p50), 5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ff758f';
+          ctx.beginPath(); ctx.arc(sx, yAt(cur.p10), 4.5, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '12px monospace';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${cur.month}ヶ月目｜P90:${formatManYen(Math.round(cur.p90))} / P50:${formatManYen(Math.round(cur.p50))} / P10:${formatManYen(Math.round(cur.p10))}`, w - 14, h - 9);
+          ctx.textAlign = 'left';
+        }
+
+        // Y-axis labels
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '12px monospace';
+        ctx.fillText(formatManYen(Math.round(maxV)), 6, padT + 10);
+        ctx.fillText(formatManYen(Math.round(minV)), 6, h - padB);
+
+        // Header HUD
+        ctx.fillStyle = '#f5d58a';
+        ctx.font = 'bold 12.5px sans-serif';
+        ctx.fillText('📈 1,000試行 現金残高ファンチャート (P90 / P50 / P10)', 12, 22);
+        if (hasBs) {
+          ctx.fillStyle = '#ff758f';
+          ctx.textAlign = 'right';
+          ctx.fillText('🦢 危機ストレス発火中', w - 12, 22);
+          ctx.textAlign = 'left';
+        }
+      }
+    };
+
+
     function mainAnimLoop() {
       app.tick++;
       if (app.view === 'rpg' || !window.codexRpgWorld) renderRpgTownCanvas();
       if (app.view === 'lifeline') renderLifeAnimCanvas();
-      else if (app.view === 'custombiz') renderCustomBizAnimCanvas();
+      else if (app.view === 'custombiz') { renderCustomBizAnimCanvas(); if (typeof CeoTurnGame !== 'undefined') CeoTurnGame.renderCanvas(); }
+      else if (app.view === 'revorisk') { if (typeof RevoEngine !== 'undefined') { RevoEngine.renderRadarCanvas(); RevoEngine.renderFanCanvas(); } }
       else if (app.view === 'realestate') renderReTownCanvas();
       else if (app.view === 'mc10k') renderRealisticViewport();
       else if (app.view === 'pilot' || app.view === 'pilot') renderQuestAnimCanvas();
@@ -8882,6 +11493,7 @@
     try { runRealEstate50Sim(); } catch (e) { console.error(e); }
     try { renderGithubFeatures(); } catch (e) { console.error(e); }
     try { updateRpgHudStage(); } catch (e) { console.error(e); }
+    try { GameSfx.init(); MetaGame.init(); CeoTurnGame.initFromInputs(false); RevoEngine.init(); } catch (e) { console.error(e); }
     try { switchView('lifeline'); } catch (e) { console.error(e); }
   </script>
 </body>
